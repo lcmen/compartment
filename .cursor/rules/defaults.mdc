@@ -1,0 +1,11 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+- Prefer built-in packages in stdlib over 3rd party libraries unless there is a good reason to do so
+- After adding or removing a dependency, always run `go mod tidy` to keep dependencies clean
+- Follow TDD - try to implement test before writing implementation
+- Use Go's built-in `testing` package for all tests
+- Run formatter after updating the code to make sure it can compile
+- Run tests after updating the code to make sure they still pass
