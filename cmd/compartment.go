@@ -7,11 +7,8 @@ import (
 	"compartment/pkg/service"
 )
 
-var help = "Usage: compartment [flags] <command> <service> [version]\n\nUse `--help` command to display available options."
-
-func init() {
-	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), `
+const help = "Usage: compartment [flags] <command> <service> [version]\n\nUse `--help` command to display available options."
+const usage = `
    ___                          _                 _
   / __|___ _ __  _ __  __ _ _ _| |_ _ __  ___ _ _| |_
  | (__/ _ \ '  \| '_ \/ _| | '_|  _| '  \/ -_) ' \  _|
@@ -24,7 +21,11 @@ Usage:
   compartment [flags] <command> <service> [version]
 
 Flags:
-`)
+`
+
+func init() {
+	flag.Usage = func() {
+		fmt.Fprintf(flag.CommandLine.Output(), usage)
 		flag.PrintDefaults()
 	}
 }
