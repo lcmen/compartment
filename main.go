@@ -1,7 +1,14 @@
 package main
 
-import "compartment/cmd"
+import (
+	"compartment/cmd"
+	"fmt"
+	"os"
+)
 
 func main() {
-	cmd.Run()
+	if err := cmd.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+  }
 }

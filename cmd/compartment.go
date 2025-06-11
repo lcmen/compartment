@@ -4,14 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"compartment/pkg/service"
 )
 
-type Service struct {
-	Name string
-	Image string
-	Version string
-	Env []string
-}
+var help = "Usage: compartment [flags] <command> <service> [version]\n\nUse `--help` command to display available options."
 
 func init() {
 	flag.Usage = func() {
@@ -21,7 +17,8 @@ func init() {
  | (__/ _ \ '  \| '_ \/ _| | '_|  _| '  \/ -_) ' \  _|
   \___\___/_|_|_| .__/\__,_|_|  \__|_|_|_\___|_||_\__|
                 |_|
-Compartment - your local service runner
+
+Compartment - your assistant for spinning up services needed for local development in a Docker-based environment.
 
 Usage:
   compartment [flags] <command> <service> [version]
@@ -32,7 +29,7 @@ Flags:
 	}
 }
 
-func Run() {
+func Run() error {
 	service, command, err := parseArgs()
 	if err != nil {
 		fmt.Println(err)
@@ -41,22 +38,31 @@ func Run() {
 
 	switch command {
 	case "start":
-		fmt.Printf("Starting service: %s\n", service.Image)
-		fmt.Printf("Container name: %s\n", service.Name)
-		fmt.Printf("Environment variables: %v\n", service.Env)
-		// TODO: Implement Docker logic here
+		err := service.Start()
+		if err != nil {
+			return fmt.Errorf("Error starting container: %v\n", err)
+		}
 	case "stop":
-		fmt.Printf("Stopping service: %s\n", service.Image)
-		fmt.Printf("Container name: %s\n", service.Name)
-		// TODO: Implement Docker logic here
+		err := service.Stop()
+		if err != nil {
+			return fmt.Errorf("Error stopping container: %v\n", err)
+		}
+	case "status":
+		err := service.Status()
+		if err != nil {
+			return fmt.Errorf("Error getting container status: %v\n", err)
+		}
+	case "help":
+		flag.Usage()
+		return nil
 	default:
-		fmt.Printf("Unknown command: %s\n", command)
-		fmt.Println("Available commands: start, stop")
-		os.Exit(1)
+		return fmt.Errorf("Unknown command: %s\nAvailable commands: start, stop", command)
 	}
+
+	return nil
 }
 
-func parseArgs() (Service, string, error) {
+func parseArgs() (*service.Service, string, error) {
 	args := []string{}
 	envs := []string{}
 	name := ""
@@ -70,22 +76,30 @@ func parseArgs() (Service, string, error) {
 
 	args = flag.Args()
 
+	if len(args) == 0 {
+		return nil, "help", nil
+	}
+
 	if len(args) < 2 {
-		return Service{}, "", fmt.Errorf("Usage: compartment [flags] <command> <service> [version]")
+		return nil, "", fmt.Errorf(help)
 	}
 
-	command, service, version := getArgOrDefault(args, 0, ""), getArgOrDefault(args, 1, ""), getArgOrDefault(args, 2, "latest")
-	if name == "" && version == "latest" {
-		name = service
-	} else if name == "" {
-		name = fmt.Sprintf("%s%s", service, version)
+	cmd, kind, ver := getArgOrDefault(args, 0, ""), getArgOrDefault(args, 1, ""), getArgOrDefault(args, 2, "latest")
+	name = getServiceName(kind, ver)
+
+	srv, err := service.NewService(name, kind, ver, envs)
+	if err != nil {
+		return nil, "", err
 	}
 
-	return Service{
-		Name: name,
-		Image: fmt.Sprintf("%s:%s", service, version),
-		Env: envs,
-	}, command, nil
+	return srv, cmd, nil
+}
+
+func getServiceName(kind string, ver string) string {
+	if ver == "latest" {
+		return kind
+	}
+	return fmt.Sprintf("%s.%s", ver, kind)
 }
 
 func getArgOrDefault(args []string, i int, def string) string {

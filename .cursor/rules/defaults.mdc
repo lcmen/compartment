@@ -1,7 +1,7 @@
 ---
 description:
-globs:
-alwaysApply: true
+globs: *.go
+alwaysApply: false
 ---
 - Prefer built-in packages in stdlib over 3rd party libraries unless there is a good reason to do so
 - After adding or removing a dependency, always run `go mod tidy` to keep dependencies clean
@@ -9,3 +9,4 @@ alwaysApply: true
 - Use Go's built-in `testing` package for all tests
 - Run formatter after updating the code to make sure it can compile
 - Run tests after updating the code to make sure they still pass
+- Don't import types from `docker/docker/api/types` but from `docker/docker/api/types/image` or `docker/docker/api/types/container`, etc.

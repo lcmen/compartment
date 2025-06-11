@@ -43,4 +43,10 @@ If you provided a custom name for the container, specify it with the `-n` option
 compartment -n myapp.search stop postgresql 17
 ```
 
-If more than one instance of the service with provided version is running and you do not specify a name, Compartment will prompt you to choose which container to stop.
+## Getting statius of a Service
+
+To get information about a service use the `status` command:
+
+```
+compartment status postgresql 17
+```
