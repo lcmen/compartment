@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"compartment/pkg/container"
+	"compartment/pkg/logging"
 	"github.com/docker/docker/api/types/mount"
 )
 
@@ -22,13 +23,15 @@ func NewService(name, service, version string, env []string) (*Service, error) {
 			return nil, fmt.Errorf("service type cannot be empty")
 	}
 
+	logging.Debug(fmt.Sprintf("Creating %s service called %s", service, name))
+
 	switch service {
 	case "postgres":
 		return NewPostgresService(name, service, version, env)
 	case "redis":
 		return NewRedisService(name, service, version, env)
 	default:
-		return nil, fmt.Errorf("unknown service: %s", service)
+		return nil, fmt.Errorf("Unknown service: %s, only postgres and redis are supported", service)
 	}
 }
 
@@ -41,7 +44,7 @@ func (s *Service) Start() error {
 	}
 
 	if cnt.State == container.StateStopped {
-		// If the service is stopped, remove it so it can be started again.
+		logging.Debug(fmt.Sprintf("Removing stopped container %s to start it again", cnt.Name))
 		cnt.Remove()
 	}
 

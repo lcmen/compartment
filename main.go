@@ -2,13 +2,13 @@ package main
 
 import (
 	"compartment/cmd"
-	"fmt"
+	"compartment/pkg/logging"
 	"os"
 )
 
 func main() {
 	if err := cmd.Run(); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		logging.Error(err.Error())
 		os.Exit(1)
-  }
+	}
 }

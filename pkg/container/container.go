@@ -3,6 +3,7 @@ package container
 import (
 	"context"
 	"fmt"
+	"compartment/pkg/logging"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
@@ -63,6 +64,7 @@ func (c *Container) Create(image string, env []string, volumes []mount.Mount) er
 	}
 
 	if err := PullImage(c.cli, context.Background(), image); err != nil {
+		logging.Debug(fmt.Sprintf("Error pulling image %s: %v", image, err))
 		c.State = StateError
 		c.Err = err
 		return err
@@ -77,6 +79,7 @@ func (c *Container) Create(image string, env []string, volumes []mount.Mount) er
 		c.Name,
 	)
 	if err != nil {
+		logging.Debug(fmt.Sprintf("Error creating container %s: %v", c.Name, err))
 		c.State = StateError
 		c.Err = err
 		return err
@@ -92,8 +95,10 @@ func (c *Container) Stop() {
 		return
 	}
 
+	logging.Debug(fmt.Sprintf("Stopping container %s", c.Name))
 	err := c.cli.ContainerStop(context.Background(), c.Name, container.StopOptions{})
 	if err != nil {
+		logging.Debug(fmt.Sprintf("Error stopping container %s: %v", c.Name, err))
 		c.State = StateError
 		c.Err = err
 		return
@@ -107,8 +112,10 @@ func (c *Container) Remove() {
 		return
 	}
 
+	logging.Debug(fmt.Sprintf("Removing container %s", c.Name))
 	err := c.cli.ContainerRemove(context.Background(), c.Name, container.RemoveOptions{Force: true})
 	if err != nil {
+		logging.Debug(fmt.Sprintf("Error removing container %s: %v", c.Name, err))
 		c.State = StateError
 		c.Err = err
 		return
@@ -122,8 +129,10 @@ func (c *Container) Start() {
 		return
 	}
 
+	logging.Debug(fmt.Sprintf("Starting container %s", c.Name))
 	err := c.cli.ContainerStart(context.Background(), c.cid, container.StartOptions{})
 	if err != nil {
+		logging.Debug(fmt.Sprintf("Error starting container %s: %v", c.Name, err))
 		c.State = StateError
 		c.Err = err
 		return
