@@ -81,14 +81,27 @@ func parseArgs() (*service.Service, string, error) {
 		return nil, "help", nil
 	}
 
+	cmd := getArgOrDefault(args, 0, "")
+
+	// If command is "stop" and -n flag is provided, allow skipping service and version
+	if cmd == "stop" && name != "" {
+		srv, err := service.NewServiceFromExistingContainer(name)
+		if err != nil {
+			return nil, "", err
+		}
+		return srv, cmd, nil
+	}
+
+	// For all other cases, require at least <command> and <service>
 	if len(args) < 2 {
 		return nil, "", fmt.Errorf(help)
 	}
 
-	cmd, kind, ver := getArgOrDefault(args, 0, ""), getArgOrDefault(args, 1, ""), getArgOrDefault(args, 2, "latest")
-	name = getServiceName(kind, ver)
+	kind := getArgOrDefault(args, 1, "")
+	ver := getArgOrDefault(args, 2, "latest")
+	serviceName := getServiceName(kind, ver)
 
-	srv, err := service.NewService(name, kind, ver, envs)
+	srv, err := service.NewService(serviceName, kind, ver, envs)
 	if err != nil {
 		return nil, "", err
 	}

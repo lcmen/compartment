@@ -23,7 +23,7 @@ func NewService(name, service, version string, env []string) (*Service, error) {
 			return nil, fmt.Errorf("service type cannot be empty")
 	}
 
-	logging.Debug(fmt.Sprintf("Creating %s service called %s", service, name))
+	logging.Debug(fmt.Sprintf("Initializing %s service called %s", service, name))
 
 	switch service {
 	case "postgres":
@@ -35,8 +35,26 @@ func NewService(name, service, version string, env []string) (*Service, error) {
 	}
 }
 
+func NewServiceFromExistingContainer(name string) (*Service, error) {
+	logging.Debug(fmt.Sprintf("Deriving service from existing container %s", name))
+
+	cnt, err := container.ExistingContainer(name)
+	if err != nil {
+		return nil, err
+	}
+
+	if cnt.State == container.StateError {
+		return nil, cnt.Err
+	}
+
+	return &Service{Name: name, Image: cnt.Image}, nil
+}
+
 func (s *Service) Start() error {
-	cnt := container.NewContainer(s.Name)
+	cnt, err := container.NewContainer(s.Name)
+	if err != nil {
+		return err
+	}
 
 	if cnt.State == container.StateRunning {
 		printServiceInfo(cnt, s)
@@ -57,7 +75,10 @@ func (s *Service) Start() error {
 }
 
 func (s *Service) Status() error {
-	cnt := container.NewContainer(s.Name)
+	cnt, err := container.NewContainer(s.Name)
+	if err != nil {
+		return err
+	}
 
 	printServiceInfo(cnt, s)
 
@@ -65,7 +86,10 @@ func (s *Service) Status() error {
 }
 
 func (s *Service) Stop() error {
-	cnt := container.NewContainer(s.Name)
+	cnt, err := container.NewContainer(s.Name)
+	if err != nil {
+		return err
+	}
 
 	cnt.Stop()
 
@@ -75,12 +99,17 @@ func (s *Service) Stop() error {
 }
 
 func printServiceInfo(cnt *container.Container, s *Service) {
+	imageInfo := ""
+	if cnt.Image != "" {
+		imageInfo = fmt.Sprintf(" using `%s` image", cnt.Image)
+	}
+
 	switch cnt.State {
 	case container.StateRunning:
-		fmt.Printf("Service `%s` using `%s` image is running.\n", cnt.Name, s.Image)
+		fmt.Printf("Service `%s`%s is running.\n", cnt.Name, imageInfo)
 	case container.StateStopped:
-		fmt.Printf("Service `%s` using `%s` image has stopped.\n", cnt.Name, s.Image)
+		fmt.Printf("Service `%s`%s has stopped.\n", cnt.Name, imageInfo)
 	case container.StateRemoved:
-		fmt.Printf("Service `%s` using `%s` image is not running.\n", cnt.Name, s.Image)
+		fmt.Printf("Service `%s`%s is not running.\n", cnt.Name, imageInfo)
 	}
 }

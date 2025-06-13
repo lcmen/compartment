@@ -27,19 +27,19 @@ type Container struct {
 	cli *client.Client
 }
 
-func NewContainer(name string) *Container {
+func NewContainer(name string) (*Container, error) {
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		return &Container{Name: name, State: StateError, Err: err}
+		return nil, err
 	}
 	defer cli.Close()
 
 	containerJSON, err := cli.ContainerInspect(context.Background(), name)
 	if err != nil {
 		if !errdefs.IsNotFound(err) {
-			return &Container{Name: name, State: StateError, Err: err}
+			return nil, err
 		} else {
-			return &Container{Name: name, State: StateRemoved, cli: cli}
+			return &Container{Name: name, State: StateRemoved, cli: cli}, nil
 		}
 	}
 
@@ -55,7 +55,32 @@ func NewContainer(name string) *Container {
 		state = StateRemoved
 	}
 
-	return &Container{Name: name, State: state, cid: cid, cli: cli}
+	return &Container{Name: name, State: state, cid: cid, cli: cli}, nil
+}
+
+func ExistingContainer(name string) (*Container, error) {
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		return nil, err
+	}
+	defer cli.Close()
+
+	containerJSON, err := cli.ContainerInspect(context.Background(), name)
+	if err != nil {
+		if !errdefs.IsNotFound(err) {
+			return nil, err
+		} else {
+			return &Container{Name: name, State: StateRemoved, cli: cli}, nil
+		}
+	}
+
+	return &Container{
+		Name: name,
+		Image: containerJSON.Image,
+		State: StateRunning,
+		cid: containerJSON.ID,
+		cli: cli,
+	}, nil
 }
 
 func (c *Container) Create(image string, env []string, volumes []mount.Mount) error {
