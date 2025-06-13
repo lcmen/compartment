@@ -83,8 +83,8 @@ func parseArgs() (*service.Service, string, error) {
 
 	cmd := getArgOrDefault(args, 0, "")
 
-	// If command is "stop" and -n flag is provided, allow skipping service and version
-	if cmd == "stop" && name != "" {
+	// For stop and status commands, we can derive the service from the existing container
+	if (cmd == "stop" || cmd == "status") && name != "" {
 		srv, err := service.NewServiceFromExistingContainer(name)
 		if err != nil {
 			return nil, "", err
