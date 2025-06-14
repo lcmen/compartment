@@ -1,17 +1,18 @@
 package service
 
 import (
-	"fmt"
 	"compartment/pkg/container"
 	"compartment/pkg/logging"
+	"fmt"
+
 	"github.com/docker/docker/api/types/mount"
 )
 
 type Service struct {
-	Name string
-	Image string
+	Name    string
+	Image   string
 	Version string
-	Env []string
+	Env     []string
 	Volumes []mount.Mount
 }
 
@@ -20,7 +21,7 @@ func NewService(name, service, version string, env []string) (*Service, error) {
 		return nil, fmt.Errorf("service name cannot be empty")
 	}
 	if service == "" {
-			return nil, fmt.Errorf("service type cannot be empty")
+		return nil, fmt.Errorf("service type cannot be empty")
 	}
 
 	logging.Debug(fmt.Sprintf("Initializing %s service called %s", service, name))
@@ -31,7 +32,7 @@ func NewService(name, service, version string, env []string) (*Service, error) {
 	case "redis":
 		return NewRedisService(name, service, version, env)
 	default:
-		return nil, fmt.Errorf("Unknown service: %s, only postgres and redis are supported", service)
+		return nil, fmt.Errorf("unknown service: %s (only postgres and redis are supported)", service)
 	}
 }
 
@@ -42,6 +43,7 @@ func NewServiceFromExistingContainer(name string) (*Service, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer cnt.Close()
 
 	if cnt.State == container.StateError {
 		return nil, cnt.Err
@@ -55,6 +57,7 @@ func (s *Service) Start() error {
 	if err != nil {
 		return err
 	}
+	defer cnt.Close()
 
 	if cnt.State == container.StateRunning {
 		printServiceInfo(cnt, s)
@@ -79,6 +82,7 @@ func (s *Service) Status() error {
 	if err != nil {
 		return err
 	}
+	defer cnt.Close()
 
 	printServiceInfo(cnt, s)
 
@@ -90,6 +94,7 @@ func (s *Service) Stop() error {
 	if err != nil {
 		return err
 	}
+	defer cnt.Close()
 
 	cnt.Stop()
 

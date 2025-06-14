@@ -1,9 +1,10 @@
 package container
 
 import (
+	"compartment/pkg/logging"
 	"context"
 	"fmt"
-	"compartment/pkg/logging"
+
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
@@ -11,6 +12,7 @@ import (
 )
 
 type State int
+
 const (
 	StateRunning State = iota
 	StateStopped
@@ -19,12 +21,12 @@ const (
 )
 
 type Container struct {
-	Name string
+	Name  string
 	Image string
 	State State
-	Err error
-	cid string
-	cli *client.Client
+	Err   error
+	cid   string
+	cli   *client.Client
 }
 
 func NewContainer(name string) (*Container, error) {
@@ -32,7 +34,6 @@ func NewContainer(name string) (*Container, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer cli.Close()
 
 	containerJSON, err := cli.ContainerInspect(context.Background(), name)
 	if err != nil {
@@ -63,7 +64,6 @@ func ExistingContainer(name string) (*Container, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer cli.Close()
 
 	containerJSON, err := cli.ContainerInspect(context.Background(), name)
 	if err != nil {
@@ -75,11 +75,11 @@ func ExistingContainer(name string) (*Container, error) {
 	}
 
 	return &Container{
-		Name: name,
+		Name:  name,
 		Image: containerJSON.Image,
 		State: StateRunning,
-		cid: containerJSON.ID,
-		cli: cli,
+		cid:   containerJSON.ID,
+		cli:   cli,
 	}, nil
 }
 
@@ -89,7 +89,7 @@ func (c *Container) Create(image string, env []string, volumes []mount.Mount) er
 	}
 
 	if err := PullImage(c.cli, context.Background(), image); err != nil {
-		logging.Debug(fmt.Sprintf("Error pulling image %s: %v", image, err))
+		logging.Debug(fmt.Sprintf("error pulling image %s: %v", image, err))
 		c.State = StateError
 		c.Err = err
 		return err
@@ -104,7 +104,7 @@ func (c *Container) Create(image string, env []string, volumes []mount.Mount) er
 		c.Name,
 	)
 	if err != nil {
-		logging.Debug(fmt.Sprintf("Error creating container %s: %v", c.Name, err))
+		logging.Debug(fmt.Sprintf("error creating container %s: %v", c.Name, err))
 		c.State = StateError
 		c.Err = err
 		return err
@@ -115,15 +115,19 @@ func (c *Container) Create(image string, env []string, volumes []mount.Mount) er
 	return nil
 }
 
+func (c *Container) Close() {
+	c.cli.Close()
+}
+
 func (c *Container) Stop() {
 	if c.State != StateRunning {
 		return
 	}
 
-	logging.Debug(fmt.Sprintf("Stopping container %s", c.Name))
+	logging.Debug(fmt.Sprintf("stopping container %s", c.Name))
 	err := c.cli.ContainerStop(context.Background(), c.Name, container.StopOptions{})
 	if err != nil {
-		logging.Debug(fmt.Sprintf("Error stopping container %s: %v", c.Name, err))
+		logging.Debug(fmt.Sprintf("error stopping container %s: %v", c.Name, err))
 		c.State = StateError
 		c.Err = err
 		return
@@ -137,10 +141,10 @@ func (c *Container) Remove() {
 		return
 	}
 
-	logging.Debug(fmt.Sprintf("Removing container %s", c.Name))
+	logging.Debug(fmt.Sprintf("removing container %s", c.Name))
 	err := c.cli.ContainerRemove(context.Background(), c.Name, container.RemoveOptions{Force: true})
 	if err != nil {
-		logging.Debug(fmt.Sprintf("Error removing container %s: %v", c.Name, err))
+		logging.Debug(fmt.Sprintf("error removing container %s: %v", c.Name, err))
 		c.State = StateError
 		c.Err = err
 		return
@@ -154,10 +158,10 @@ func (c *Container) Start() {
 		return
 	}
 
-	logging.Debug(fmt.Sprintf("Starting container %s", c.Name))
+	logging.Debug(fmt.Sprintf("starting container %s", c.Name))
 	err := c.cli.ContainerStart(context.Background(), c.cid, container.StartOptions{})
 	if err != nil {
-		logging.Debug(fmt.Sprintf("Error starting container %s: %v", c.Name, err))
+		logging.Debug(fmt.Sprintf("error starting container %s: %v", c.Name, err))
 		c.State = StateError
 		c.Err = err
 		return

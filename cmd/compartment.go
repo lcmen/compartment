@@ -1,10 +1,9 @@
 package cmd
 
 import (
+	"compartment/pkg/service"
 	"flag"
 	"fmt"
-	"os"
-	"compartment/pkg/service"
 )
 
 const help = "Usage: compartment [flags] <command> <service> [version]\n\nUse `--help` command to display available options."
@@ -33,31 +32,30 @@ func init() {
 func Run() error {
 	service, command, err := parseArgs()
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return err
 	}
 
 	switch command {
 	case "start":
 		err := service.Start()
 		if err != nil {
-			return fmt.Errorf("Error starting container: %v\n", err)
+			return fmt.Errorf("error starting container: %w", err)
 		}
 	case "stop":
 		err := service.Stop()
 		if err != nil {
-			return fmt.Errorf("Error stopping container: %v\n", err)
+			return fmt.Errorf("error stopping container: %w", err)
 		}
 	case "status":
 		err := service.Status()
 		if err != nil {
-			return fmt.Errorf("Error getting container status: %v\n", err)
+			return fmt.Errorf("error getting container status: %w", err)
 		}
 	case "help":
 		flag.Usage()
 		return nil
 	default:
-		return fmt.Errorf("Unknown command: %s\nAvailable commands: start, stop", command)
+		return fmt.Errorf("unknown command: %s (available commands: start, stop)", command)
 	}
 
 	return nil

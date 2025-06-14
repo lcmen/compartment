@@ -57,23 +57,40 @@ compartment status postgresql 17
 
 Compartment pairs best with [devdns](https://github.com/ruudud/devdns), and a custom resolver to access containers via their names.
 
+**What is devdns?**
+
+> devdns automatically creates DNS records for your running Docker containers, so you can access them as `<container-name>.containers` from your host machine.
+
 ```
-docker run -d --rm --name devdns -e DNS_DOMAIN=containers -p 53:53/udp -v /var/run/docker.sock:/var/run/docker.sock:ro ruudud/devdns
+docker run -d --rm --name devdns -e DNS_DOMAIN=container -p 53:53/udp -v /var/run/docker.sock:/var/run/docker.sock:ro ruudud/devdns
 ```
 
 ### Resolver
 
-The custom resolver allows you to route all `.containers` requests to your DNS server running inside the `devdns` container.
+The custom resolver allows you to route all `.container` requests to your DNS server running inside the `devdns` container.
 
 #### macOS
 
-Create a file at `/etc/resolver/containers` with the following content:
+Create a file at `/etc/resolver/container` with the following content:
 
 ```
 nameserver 127.0.0.1
 ```
 
 On macOS, you also need [docker-mac-net-connect](https://github.com/chipmk/docker-mac-net-connect) to be able to access containers directly via their IPs.
+
+**Quickstart for docker-mac-net-connect:**
+
+```sh
+brew install chipmk/tap/docker-mac-net-connect
+sudo docker-mac-net-connect
+```
+
+Or refer to their [installation guide](https://github.com/chipmk/docker-mac-net-connect#installation).
+
+#### Linux/Windows
+
+If you are using Linux, you can usually access containers directly via their IPs without extra setup. For Windows, refer to your Docker networking documentation or consider using WSL2 for a similar experience.
 
 ## Testing
 
@@ -82,4 +99,16 @@ If you have configured everything correctly, you should be able to start the ser
 ```
 compartment start postgresql
 psql -U postgres -h postgres.containers
+```
+
+### Verifying DNS Resolution
+
+To test that DNS is working correctly:
+
+```bash
+# This should return your container's IP address
+host postgres.containers
+
+# Test with dig as well
+dig postgres.containers
 ```
