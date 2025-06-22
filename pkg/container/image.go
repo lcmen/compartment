@@ -1,13 +1,13 @@
 package container
 
 import (
+	"compartment/pkg/logging"
 	"context"
 	"encoding/json"
-	"compartment/pkg/logging"
 	"fmt"
-	"io"
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
+	"io"
 )
 
 type ImageMessage struct {

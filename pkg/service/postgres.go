@@ -1,10 +1,11 @@
 package service
 
 import (
-	"fmt"
-	"os"
-	"github.com/docker/docker/api/types/mount"
 	"compartment/pkg/configuration"
+	"fmt"
+	"github.com/docker/docker/api/types/mount"
+	"github.com/docker/go-connections/nat"
+	"os"
 )
 
 var defaultPostgresEnv = []string{
@@ -18,11 +19,12 @@ func NewPostgresService(name, service, version string, env []string) (*Service, 
 	volumes := getPostgresVolumes(name)
 
 	return &Service{
-		Name: name,
-		Image: fmt.Sprintf("%s:%s", service, version),
+		Name:    name,
+		Image:   fmt.Sprintf("%s:%s", service, version),
 		Version: version,
-		Env: env,
+		Env:     env,
 		Volumes: volumes,
+		Ports:   make(nat.PortMap),
 	}, nil
 }
 

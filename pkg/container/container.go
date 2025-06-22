@@ -9,6 +9,7 @@ import (
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/errdefs"
+	"github.com/docker/go-connections/nat"
 )
 
 type State int
@@ -83,7 +84,7 @@ func ExistingContainer(name string) (*Container, error) {
 	}, nil
 }
 
-func (c *Container) Create(image string, env []string, volumes []mount.Mount) error {
+func (c *Container) Create(image string, env []string, volumes []mount.Mount, ports nat.PortMap) error {
 	if c.State != StateRemoved {
 		return fmt.Errorf("container not in removable state: %v", c.State)
 	}
@@ -97,8 +98,8 @@ func (c *Container) Create(image string, env []string, volumes []mount.Mount) er
 
 	resp, err := c.cli.ContainerCreate(
 		context.Background(),
-		&container.Config{Image: image, Env: env},
-		&container.HostConfig{AutoRemove: true, Mounts: volumes},
+		&container.Config{Image: image, Env: env, ExposedPorts: exposedPorts(ports)},
+		&container.HostConfig{AutoRemove: true, Mounts: volumes, PortBindings: ports},
 		nil,
 		nil,
 		c.Name,
@@ -168,4 +169,12 @@ func (c *Container) Start() {
 	}
 
 	c.State = StateRunning
+}
+
+func exposedPorts(ports nat.PortMap) nat.PortSet {
+	exposedPorts := make(nat.PortSet)
+	for port := range ports {
+		exposedPorts[port] = struct{}{}
+	}
+	return exposedPorts
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/docker/docker/api/types/mount"
+	"github.com/docker/go-connections/nat"
 )
 
 type Service struct {
@@ -14,6 +15,7 @@ type Service struct {
 	Version string
 	Env     []string
 	Volumes []mount.Mount
+	Ports   nat.PortMap
 }
 
 func NewService(name, service, version string, env []string) (*Service, error) {
@@ -31,8 +33,10 @@ func NewService(name, service, version string, env []string) (*Service, error) {
 		return NewPostgresService(name, service, version, env)
 	case "redis":
 		return NewRedisService(name, service, version, env)
+	case "devdns":
+		return NewDevDNSService(env)
 	default:
-		return nil, fmt.Errorf("unknown service: %s (only postgres and redis are supported)", service)
+		return nil, fmt.Errorf("unknown service: %s (only postgres, redis, and devdns are supported)", service)
 	}
 }
 
@@ -69,7 +73,7 @@ func (s *Service) Start() error {
 		cnt.Remove()
 	}
 
-	cnt.Create(s.Image, s.Env, s.Volumes)
+	cnt.Create(s.Image, s.Env, s.Volumes, s.Ports)
 	cnt.Start()
 
 	printServiceInfo(cnt, s)

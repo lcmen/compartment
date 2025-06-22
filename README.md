@@ -61,8 +61,10 @@ Compartment pairs best with [devdns](https://github.com/ruudud/devdns), and a cu
 
 > devdns automatically creates DNS records for your running Docker containers, so you can access them as `<container-name>.containers` from your host machine.
 
+To start it, run:
+
 ```
-docker run -d --rm --name devdns -e DNS_DOMAIN=container -p 53:53/udp -v /var/run/docker.sock:/var/run/docker.sock:ro ruudud/devdns
+compartment start devdns
 ```
 
 ### Resolver
@@ -112,3 +114,17 @@ host postgres.containers
 # Test with dig as well
 dig postgres.containers
 ```
+
+## Checking Configuration
+
+To check if your development environment is properly configured, use the `check` command:
+
+```
+compartment check
+```
+
+This command verifies your development environment setup by checking:
+
+- Whether the devdns container is running
+- DNS resolution configuration
+- Docker connectivity

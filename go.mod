@@ -2,7 +2,10 @@ module compartment
 
 go 1.24.3
 
-require github.com/docker/docker v28.2.2+incompatible
+require (
+	github.com/docker/docker v28.2.2+incompatible
+	github.com/docker/go-connections v0.5.0
+)
 
 require (
 	github.com/Microsoft/go-winio v0.4.14 // indirect
@@ -10,7 +13,6 @@ require (
 	github.com/containerd/errdefs/pkg v0.3.0 // indirect
 	github.com/containerd/log v0.1.0 // indirect
 	github.com/distribution/reference v0.6.0 // indirect
-	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect

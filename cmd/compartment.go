@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"compartment/pkg/check"
 	"compartment/pkg/service"
 	"flag"
 	"fmt"
@@ -51,11 +52,16 @@ func Run() error {
 		if err != nil {
 			return fmt.Errorf("error getting container status: %w", err)
 		}
+	case "check":
+		err := check.Check()
+		if err != nil {
+			return fmt.Errorf("error checking devdns container: %w", err)
+		}
 	case "help":
 		flag.Usage()
 		return nil
 	default:
-		return fmt.Errorf("unknown command: %s (available commands: start, stop)", command)
+		return fmt.Errorf("unknown command: %s (available commands: start, stop, status, check)", command)
 	}
 
 	return nil
@@ -80,6 +86,11 @@ func parseArgs() (*service.Service, string, error) {
 	}
 
 	cmd := getArgOrDefault(args, 0, "")
+
+	// Check command doesn't require any service
+	if cmd == "check" {
+		return nil, cmd, nil
+	}
 
 	// For stop and status commands, we can derive the service from the existing container
 	if (cmd == "stop" || cmd == "status") && name != "" {
