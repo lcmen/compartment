@@ -125,6 +125,6 @@ compartment check
 
 This command verifies your development environment setup by checking:
 
-- Whether the devdns container is running
-- DNS resolution configuration
 - Docker connectivity
+- Whether the devdns container is running
+- Direct access to containers via their IPs

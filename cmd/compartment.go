@@ -86,36 +86,33 @@ func parseArgs() (*service.Service, string, error) {
 	}
 
 	cmd := getArgOrDefault(args, 0, "")
+	srv, err := getServiceForCommand(cmd, name, args)
 
-	// Check command doesn't require any service
-	if cmd == "check" {
-		return nil, cmd, nil
-	}
+	return srv, cmd, err
+}
 
-	// For stop and status commands, we can derive the service from the existing container
-	if (cmd == "stop" || cmd == "status") && name != "" {
-		srv, err := service.NewServiceFromExistingContainer(name)
-		if err != nil {
-			return nil, "", err
+func getServiceForCommand(cmd, name string, args []string) (*service.Service, error) {
+	switch cmd {
+	case "check":
+		return nil, nil
+	case "stop", "status":
+		return service.NewServiceFromExistingContainer(name)
+	default:
+		if len(args) < 2 {
+			return nil, fmt.Errorf("command '%s' requires at least <service> argument", cmd)
 		}
-		return srv, cmd, nil
-	}
-
-	// For all other cases, require at least <command> and <service>
-	if len(args) < 2 {
-		return nil, "", fmt.Errorf(help)
 	}
 
 	kind := getArgOrDefault(args, 1, "")
 	ver := getArgOrDefault(args, 2, "latest")
 	serviceName := getServiceName(kind, ver)
 
-	srv, err := service.NewService(serviceName, kind, ver, envs)
+	srv, err := service.NewService(serviceName, kind, ver, nil)
 	if err != nil {
-		return nil, "", err
+		return nil, fmt.Errorf("error creating service: %w", err)
 	}
 
-	return srv, cmd, nil
+	return srv, nil
 }
 
 func getServiceName(kind string, ver string) string {

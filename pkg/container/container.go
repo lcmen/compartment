@@ -120,21 +120,26 @@ func (c *Container) Close() {
 	c.cli.Close()
 }
 
-func (c *Container) Stop() {
+func (c *Container) IPAddress() (string, error) {
 	if c.State != StateRunning {
-		return
+		return "", fmt.Errorf("container not running: %s", c.Name)
 	}
 
-	logging.Debug(fmt.Sprintf("stopping container %s", c.Name))
-	err := c.cli.ContainerStop(context.Background(), c.Name, container.StopOptions{})
+	containerJSON, err := c.cli.ContainerInspect(context.Background(), c.cid)
 	if err != nil {
-		logging.Debug(fmt.Sprintf("error stopping container %s: %v", c.Name, err))
-		c.State = StateError
-		c.Err = err
-		return
+		logging.Debug(fmt.Sprintf("error inspecting container %s: %v", c.Name, err))
+		return "", err
 	}
 
-	c.State = StateStopped
+	if len(containerJSON.NetworkSettings.Networks) == 0 {
+		return "", fmt.Errorf("no networks found for container %s", c.Name)
+	}
+
+	for _, network := range containerJSON.NetworkSettings.Networks {
+		return network.IPAddress, nil
+	}
+
+	return "", fmt.Errorf("no IP address found for container %s", c.Name)
 }
 
 func (c *Container) Remove() {
@@ -169,6 +174,23 @@ func (c *Container) Start() {
 	}
 
 	c.State = StateRunning
+}
+
+func (c *Container) Stop() {
+	if c.State != StateRunning {
+		return
+	}
+
+	logging.Debug(fmt.Sprintf("stopping container %s", c.Name))
+	err := c.cli.ContainerStop(context.Background(), c.Name, container.StopOptions{})
+	if err != nil {
+		logging.Debug(fmt.Sprintf("error stopping container %s: %v", c.Name, err))
+		c.State = StateError
+		c.Err = err
+		return
+	}
+
+	c.State = StateStopped
 }
 
 func exposedPorts(ports nat.PortMap) nat.PortSet {
