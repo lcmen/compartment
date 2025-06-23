@@ -1,3 +1,4 @@
+// Version: v0.1.0
 module compartment
 
 go 1.24.3
