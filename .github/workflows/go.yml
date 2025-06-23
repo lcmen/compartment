@@ -1,16 +1,12 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
-
-name: Go
+name: Build, test and release
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "release" ]
   pull_request:
     branches: [ "main" ]
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     steps:
@@ -26,3 +22,69 @@ jobs:
 
     - name: Test
       run: go test -v ./...
+
+  release-build:
+    if: github.ref == 'refs/heads/release'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        goos: [linux, darwin]
+        goarch: [amd64, arm64]
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.24'
+
+    - name: Build
+      run: go build -o compartment
+
+    - name: Extract version from go.mod
+      run: |
+        version=$(grep -Eo '^// Version: v[0-9]+\.[0-9]+\.[0-9]+' go.mod | awk '{print $3}')
+        echo "VERSION=$version" >> $GITHUB_ENV
+
+    - name: Build binaries
+      run: |
+        GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o compartment-${{ matrix.goos }}-${{ matrix.goarch }}
+
+    - name: Upload binaries
+      uses: actions/upload-artifact@v4
+      with:
+        name: compartment-${{ matrix.goos }}-${{ matrix.goarch }}
+        path: compartment-${{ matrix.goos }}-${{ matrix.goarch }}
+
+  release:
+    if: github.ref == 'refs/heads/release'
+    needs: release-build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version from go.mod
+        id: extract_version
+        run: |
+          version=$(grep -Eo '^// Version: v[0-9]+\.[0-9]+\.[0-9]+' go.mod | sed 's/^\/\/ Version: //')
+          if [ -z "$version" ]; then
+            version=$(git describe --tags --abbrev=0 || echo "v${{ github.run_number }}")
+          fi
+          echo "VERSION=$version" >> $GITHUB_ENV
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ env.VERSION }}
+          name: Release ${{ env.VERSION }}
+          artifacts: ./artifacts/**
