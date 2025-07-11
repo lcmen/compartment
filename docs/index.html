@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<!-- Try theme-dark -->
+<html lang="en" class="theme-light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Compartment — Docker services for local development</title>
+    <meta content="Your assistant for spinning up Docker services for local development without port conflicts" name="description" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Compartment" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content="Compartment" />
+    <meta property="og:description" content="Your assistant for spinning up Docker services for local development without port conflicts" />
+    <meta property="og:url" content="https://lcmen.github.io/compartment" />
+    <meta property="og:image" content="https://lcmen.github.io/compartment/social-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Compartment" />
+    <meta name="twitter:description" content="Your assistant for spinning up Docker services for local development without port conflicts" />
+    <meta name="twitter:image" content="https://lcmen.github.io/compartment/social-image.png" />
+    <meta name="twitter:url" content="https://lcmen.github.io/compartment" />
+
+    <!-- Favicon and icons -->
+    <link rel="icon" href="images/favicon/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="images/favicon/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="images/favicon/apple-touch-icon.png" />
+
+    <link href="vendor/font-awesome-6.7.2/css/all.min.css" rel="stylesheet" />
+    <link href="css/index.css" rel="stylesheet" type="text/css" />
+    <link href="css/tablet.css" rel="stylesheet" type="text/css" />
+    <link href="css/mobile.css" rel="stylesheet" type="text/css" />
+    <script src="js/main.js" type="text/javascript" defer></script>
+  </head>
+  <body>
+    <div class="background-gradient"></div>
+    <div class="page-container">
+      <header class="nav-container">
+        <a href="index.html" class="nav-brand"><strong>Compartment</strong></a>
+        <nav role="navigation" class="nav-menu" data-navigation>
+          <a href="https://github.com/lcmen/compartment" class="nav-link">GitHub ↗</a>
+          <a href="#installation" class="nav-link">Installation</a>
+          <a href="#features" class="nav-link">Features</a>
+          <div class="button-group stacked margin-top-l mobile-only">
+            <a href="#installation" class="button primary">Get Started</a>
+          </div>
+        </nav>
+        <div class="button-group">
+          <a href="https://github.com/lcmen/compartment" class="button ghost compact hide-on-mobile">
+            <div class="fa-brands fa-github icon l"></div>
+            <div class="paragraph s tertiary">Star</div>
+          </a>
+          <a href="#installation" class="button primary compact">Get Started</a>
+          <button class="button ghost compact nav-hamburger" data-mobile-toggle>
+            <span class="fa-solid fa-bars icon m"></span>
+          </button>
+        </div>
+      </header>
+      <main>
+        <section>
+          <div class="heading hero centered">
+            <a href="https://github.com/lcmen/compartment/releases" class="eyebrow">Open Source Tool</a>
+            <h1 class="balanced">
+              Docker services for local development
+            </h1>
+            <p class="paragraph m secondary balanced">
+              Run multiple Docker services in parallel without port conflicts. Perfect for multi-project development environments.
+            </p>
+            <div class="button-group margin-paragraph centered">
+              <a href="#installation" class="button primary">Get Started</a>
+              <a href="https://github.com/lcmen/compartment" class="button tertiary">View on GitHub</a>
+            </div>
+          </div>
+          <div class="image-wide">
+            <img src="images/placeholder-main-ui.png" width="100%" style="aspect-ratio: 2356 / 1404" alt="Main screenshot of the product" />
+          </div>
+        </section>
+        <section>
+          <div class="code-block">
+            <pre>
+              <code>
+                # Install Compartment
+                # Download latest release
+                curl -L https://github.com/lcmen/compartment/releases/latest/download/compartment-linux -o compartment
+                chmod +x compartment
+
+                # Start PostgreSQL
+                ./compartment start postgresql 17
+
+                # Start Redis with custom name
+                ./compartment -n myapp.cache start redis 8
+
+                # Check environment
+                ./compartment check
+              </code>
+            </pre>
+          </div>
+        </section>
+        <section>
+          <div class="heading" id="features">
+            <h2 class="no-top-margin">Key Features</h2>
+            <p class="paragraph m secondary">
+              Compartment simplifies Docker service management for development environments,
+              allowing you to run multiple projects simultaneously without conflicts.
+            </p>
+          </div>
+          <div class="grid">
+            <div class="feature-card">
+              <div class="feature-heading">
+                <h3 class="color-accent no-top-margin">
+                  Parallel Service Instances
+                </h3>
+                <p class="paragraph m secondary">
+                  Run multiple instances of the same service with different versions simultaneously.
+                  Perfect for testing compatibility across different database versions or
+                  working on multiple projects that require different service configurations.
+                </p>
+              </div>
+              <img src="images/placeholder-feature-16-9.png" loading="lazy" width="100%"
+                alt="Screenshot of a feature 16 by 9" />
+            </div>
+          </div>
+          <div class="grid columns-2">
+            <div class="feature-card">
+              <div class="feature-heading">
+                <h3 class="color-accent no-top-margin">
+                  No Port Conflicts
+                </h3>
+                <p class="paragraph s secondary">
+                  Automatic port management ensures services don't conflict with each other.
+                  Each service gets its own isolated environment while remaining easily accessible
+                  through DNS resolution.
+                </p>
+              </div>
+              <img src="images/placeholder-feature-16-9.png" loading="lazy" width="100%"
+                alt="Screenshot of a feature 16 by 9" />
+            </div>
+            <div class="feature-card">
+              <div class="feature-heading">
+                <h3 class="color-accent no-top-margin">
+                  Data Persistence
+                </h3>
+                <p class="paragraph s secondary">
+                  Automatic volume management ensures your data persists between container restarts.
+                  Each service gets isolated storage in your system's data directory.
+                </p>
+              </div>
+              <img src="images/placeholder-feature-4-3.png" loading="lazy" width="100%"
+                alt="Screenshot of a feature 4 by 3" />
+            </div>
+          </div>
+        </section>
+        <section>
+          <div class="heading centered" id="installation">
+            <h2 class="no-top-margin">Get Started</h2>
+            <p class="paragraph m secondary">
+              Install Compartment and start managing your Docker services for local development.
+              Compatible with macOS, Linux, and Windows (via WSL2).
+            </p>
+          </div>
+          <div class="cards-with-icons-container">
+            <div class="card-with-icon horizontal">
+              <div class="fa-solid fa-download icon xl color-accent"></div>
+              <div class="feature-heading">
+                <p class="paragraph m bold">Download Binary</p>
+                <p class="paragraph m secondary">
+                  Download pre-built binaries from <a href="https://github.com/lcmen/compartment/releases" target="_blank">GitHub Releases</a><br>
+                </p>
+              </div>
+            </div>
+            <div class="card-with-icon horizontal">
+              <div class="fa-brands fa-docker icon xl color-accent"></div>
+              <div class="feature-heading">
+                <p class="paragraph m bold">Docker Required</p>
+                <p class="paragraph m secondary">
+                  Ensure Docker is installed and running on your system.
+                  Compartment manages Docker containers for your services.
+                </p>
+              </div>
+            </div>
+            <div class="card-with-icon horizontal">
+              <div class="fa-solid fa-check icon xl color-accent"></div>
+              <div class="feature-heading">
+                <p class="paragraph m bold">
+                  Verify Installation
+                </p>
+                <p class="paragraph m secondary">
+                  Run <code>compartment check</code> to verify your environment setup
+                  and ensure everything is configured correctly.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section>
+          <div class="grid columns-1/2-1 gap-xl">
+            <div class="heading">
+              <h2 class="no-top-margin">Example Usage</h2>
+              <p class="paragraph m secondary">
+                Start multiple PostgreSQL versions for testing database migrations
+                across different versions, all running simultaneously without conflicts.
+              </p>
+            </div>
+            <div class="card-code-block dark">
+              <pre class="shiki github-dark-default" style="margin: 0px; color: #e6edf3" tabindex="0"><code><span style="color:#8B949E"># Start PostgreSQL 15 for legacy project</span>
+<span style="color:#A5D6FF">compartment -n legacy.db start postgresql 15</span>
+
+<span style="color:#8B949E"># Start PostgreSQL 17 for new project</span>
+<span style="color:#A5D6FF">compartment -n newapp.db start postgresql 17</span>
+
+<span style="color:#8B949E"># Add Redis for caching</span>
+<span style="color:#A5D6FF">compartment -n newapp.cache start redis 8</span>
+
+<span style="color:#8B949E"># Check what's running</span>
+<span style="color:#A5D6FF">compartment status legacy.db</span>
+<span style="color:#A5D6FF">compartment status newapp.db</span>
+
+<span style="color:#8B949E"># Access via DNS (with devdns)</span>
+<span style="color:#A5D6FF">psql -h legacy.db.containers -U postgres</span>
+<span style="color:#A5D6FF">psql -h newapp.db.containers -U postgres</span></code></pre>
+            </div>
+          </div>
+        </section>
+      </main>
+      <footer class="footer">
+        <div class="footer-menu">
+          <div>
+            <p class="paragraph s">
+              © 2025 <a href="https://www.mendelowski.com" ref="noopener" target="_blank">Mendelowski</a>
+              <br />
+              Built with
+              <a href="https://launchkit.evilmartians.io" ref="noopener" target="_blank">LaunchKit</a>
+            </p>
+          </div>
+          <div>
+            <div class="link-list">
+              <a href="https://github.com/lcmen/compartment" class="icon-link ui s" target="_blank">
+                <div class="fa-brands fa-github icon m color-accent"></div>
+                <div class="pseudo-link">GitHub</div>
+              </a>
+              <a href="https://github.com/lcmen/compartment/releases" class="icon-link ui s" target="_blank">
+                <div class="fa-solid fa-tag icon m color-accent"></div>
+                <div class="pseudo-link">Releases</div>
+              </a>
+              <a href="https://github.com/lcmen/compartment/issues" class="icon-link ui s" target="_blank">
+                <div class="fa-solid fa-bug icon m color-accent"></div>
+                <div class="pseudo-link">Issues</div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="link-list-horizontal">
+          <a href="https://github.com/lcmen/compartment/blob/main/LICENSE" class="ui s tertiary">MIT License</a>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
