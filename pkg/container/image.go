@@ -48,9 +48,9 @@ func PullImage(cli *client.Client, ctx context.Context, name string) error {
 
 func logMsg(msg *ImageMessage) {
 	if msg.ID != "" {
-		logging.Info(fmt.Sprintf("%s: %s", msg.ID, msg.Status))
+		logging.Debug(fmt.Sprintf("%s: %s", msg.ID, msg.Status))
 	} else {
-		logging.Info(msg.Status)
+		logging.Debug(msg.Status)
 	}
 }
 
