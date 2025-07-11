@@ -22,7 +22,7 @@ compartment start redis 8
 By default, the container is named after the service and its version (e.g., `postgresql17` or `redis8`). You can specify a custom name using the `-n` option (before the command):
 
 ```
-compartment -n myapp.search start elasticsearch 13
+compartment -n myapp.cache start redis 8
 ```
 
 To provide environment variables, use the `-e` flag (before the command):
@@ -42,7 +42,7 @@ compartment stop postgresql 17
 If you provided a custom name for the container, specify it with the `-n` option (before the command):
 
 ```
-compartment -n myapp.search stop postgresql 17
+compartment -n myapp.cache stop redis 8
 ```
 
 ### Getting the Status of a Service
@@ -59,7 +59,7 @@ Compartment pairs best with [devdns](https://github.com/ruudud/devdns), and a cu
 
 **What is devdns?**
 
-> devdns automatically creates DNS records for your running Docker containers, so you can access them as `<container-name>.containers` from your host machine.
+> devdns automatically creates DNS records for your running Docker containers, so you can access them as `<container-name>.container` from your host machine.
 
 To start it, run:
 
@@ -81,6 +81,8 @@ nameserver 127.0.0.1
 
 On macOS, you also need [docker-mac-net-connect](https://github.com/chipmk/docker-mac-net-connect) to be able to access containers directly via their IPs.
 
+**Important:** You must disable "Resource Saver" in Docker Desktop for Mac for docker-mac-net-connect to work properly. Go to Docker Desktop Settings → Resources → Advanced and uncheck "Resource Saver". See [this issue](https://github.com/chipmk/docker-mac-net-connect/issues/36) for details.
+
 **Quickstart for docker-mac-net-connect:**
 
 ```sh
@@ -90,9 +92,9 @@ sudo docker-mac-net-connect
 
 Or refer to their [installation guide](https://github.com/chipmk/docker-mac-net-connect#installation).
 
-#### Linux/Windows
+#### Linux
 
-If you are using Linux, you can usually access containers directly via their IPs without extra setup. For Windows, refer to your Docker networking documentation or consider using WSL2 for a similar experience.
+If you are using Linux, you can usually access containers directly via their IPs without extra setup.
 
 ## Testing
 
@@ -100,7 +102,7 @@ If you have configured everything correctly, you should be able to start the ser
 
 ```
 compartment start postgresql
-psql -U postgres -h postgres.containers
+psql -U postgres -h postgres.container
 ```
 
 ### Verifying DNS Resolution
@@ -109,10 +111,10 @@ To test that DNS is working correctly:
 
 ```bash
 # This should return your container's IP address
-host postgres.containers
+host postgres.container
 
 # Test with dig as well
-dig postgres.containers
+dig postgres.container
 ```
 
 ## Checking Configuration

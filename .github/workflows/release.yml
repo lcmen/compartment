@@ -1,31 +1,15 @@
-name: Build, test and release
+name: Release
 
 on:
-  push:
-    branches: [ "main", "release" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.0)'
+        required: true
+        type: string
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.24'
-
-    - name: Build
-      run: go build -v ./...
-
-    - name: Test
-      run: go test -v ./...
-
-  release-build:
-    if: github.ref == 'refs/heads/release'
-    needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -44,9 +28,9 @@ jobs:
     - name: Build
       run: go build -o compartment
 
-    - name: Extract version from go.mod
+    - name: Extract or use provided version
       run: |
-        version=$(grep -Eo '^// Version: v[0-9]+\.[0-9]+\.[0-9]+' go.mod | awk '{print $3}')
+        version="${{ github.event.inputs.version }}"
         echo "VERSION=$version" >> $GITHUB_ENV
 
     - name: Build binaries
@@ -60,21 +44,17 @@ jobs:
         path: compartment-${{ matrix.goos }}-${{ matrix.goarch }}
 
   release:
-    if: github.ref == 'refs/heads/release'
-    needs: release-build
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
 
-      - name: Extract version from go.mod
+      - name: Extract or use provided version
         id: extract_version
         run: |
-          version=$(grep -Eo '^// Version: v[0-9]+\.[0-9]+\.[0-9]+' go.mod | sed 's/^\/\/ Version: //')
-          if [ -z "$version" ]; then
-            version=$(git describe --tags --abbrev=0 || echo "v${{ github.run_number }}")
-          fi
+          version="${{ github.event.inputs.version }}"
           echo "VERSION=$version" >> $GITHUB_ENV
 
       - name: Download all artifacts

@@ -5,7 +5,9 @@ import (
 	"github.com/docker/go-connections/nat"
 )
 
-var defaultDevDNSEnv = []string{}
+var defaultDevDNSEnv = []string{
+	"DNS_DOMAIN=container",
+}
 
 func NewDevDNSService(env []string) (*Service, error) {
 	env = append(defaultDevDNSEnv, env...)
