@@ -92,20 +92,25 @@ func parseArgs() (*service.Service, string, error) {
 }
 
 func getServiceForCommand(cmd, name string, args []string) (*service.Service, error) {
-	switch cmd {
-	case "check":
+	if cmd == "check" {
 		return nil, nil
-	case "stop", "status":
-		return service.NewServiceFromExistingContainer(name)
-	default:
-		if len(args) < 2 {
-			return nil, fmt.Errorf("command '%s' requires at least <service> argument", cmd)
-		}
+	}
+
+	if len(args) < 2 {
+		return nil, fmt.Errorf("command '%s' requires at least <service> argument", cmd)
 	}
 
 	kind := getArgOrDefault(args, 1, "")
 	ver := getArgOrDefault(args, 2, "latest")
 	serviceName := getServiceName(kind, ver)
+
+	if cmd == "stop" || cmd == "status" {
+		containerName := serviceName
+		if name != "" {
+			containerName = name
+		}
+		return service.NewServiceFromExistingContainer(containerName)
+	}
 
 	srv, err := service.NewService(serviceName, kind, ver, nil)
 	if err != nil {
