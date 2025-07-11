@@ -1,6 +1,6 @@
 # Compartment
 
-Compartment is your assistant for spinning up services needed for local development in a Docker-based environment. It allows you to run multiple instances of services in parallel without port conflicts, so you can work on several projects simultaneously.
+Compartment is your assistant for spinning up local services needed for development in a Docker-based environment. It allows you to run multiple instances of services in parallel without port conflicts, so you can work on several projects simultaneously.
 
 ## Managing Services
 

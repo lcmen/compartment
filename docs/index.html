@@ -3,8 +3,8 @@
 <html lang="en" class="theme-light">
   <head>
     <meta charset="utf-8" />
-    <title>Compartment — Docker services for local development</title>
-    <meta content="Your assistant for spinning up Docker services for local development without port conflicts" name="description" />
+    <title>Compartment — Local services for development</title>
+    <meta content="Your assistant for spinning up local services for development without port conflicts" name="description" />
     <meta content="width=device-width, initial-scale=1" name="viewport" />
 
     <!-- Open Graph -->
@@ -12,14 +12,14 @@
     <meta property="og:site_name" content="Compartment" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:title" content="Compartment" />
-    <meta property="og:description" content="Your assistant for spinning up Docker services for local development without port conflicts" />
+    <meta property="og:description" content="Your assistant for spinning up local services for development without port conflicts" />
     <meta property="og:url" content="https://lcmen.github.io/compartment" />
     <meta property="og:image" content="https://lcmen.github.io/compartment/social-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Compartment" />
-    <meta name="twitter:description" content="Your assistant for spinning up Docker services for local development without port conflicts" />
+    <meta name="twitter:description" content="Your assistant for spinning up local services for development without port conflicts" />
     <meta name="twitter:image" content="https://lcmen.github.io/compartment/social-image.png" />
     <meta name="twitter:url" content="https://lcmen.github.io/compartment" />
 
@@ -63,46 +63,25 @@
           <div class="heading hero centered">
             <a href="https://github.com/lcmen/compartment/releases" class="eyebrow">Open Source Tool</a>
             <h1 class="balanced">
-              Docker services for local development
+              Local services for development
             </h1>
             <p class="paragraph m secondary balanced">
-              Run multiple Docker services in parallel without port conflicts. Perfect for multi-project development environments.
+              Run multiple local services in parallel without port conflicts. Perfect for multi-project development environments.
             </p>
             <div class="button-group margin-paragraph centered">
               <a href="#installation" class="button primary">Get Started</a>
               <a href="https://github.com/lcmen/compartment" class="button tertiary">View on GitHub</a>
             </div>
           </div>
-          <div class="image-wide">
-            <img src="images/placeholder-main-ui.png" width="100%" style="aspect-ratio: 2356 / 1404" alt="Main screenshot of the product" />
-          </div>
-        </section>
-        <section>
-          <div class="code-block">
-            <pre>
-              <code>
-                # Install Compartment
-                # Download latest release
-                curl -L https://github.com/lcmen/compartment/releases/latest/download/compartment-linux -o compartment
-                chmod +x compartment
-
-                # Start PostgreSQL
-                ./compartment start postgresql 17
-
-                # Start Redis with custom name
-                ./compartment -n myapp.cache start redis 8
-
-                # Check environment
-                ./compartment check
-              </code>
-            </pre>
+          <div class="image-wide" id="installation">
+            <img src="images/main-ui.svg" width="100%" alt="Main screenshot of the product" />
           </div>
         </section>
         <section>
           <div class="heading" id="features">
             <h2 class="no-top-margin">Key Features</h2>
             <p class="paragraph m secondary">
-              Compartment simplifies Docker service management for development environments,
+              Compartment simplifies local service management for development environments,
               allowing you to run multiple projects simultaneously without conflicts.
             </p>
           </div>
@@ -153,10 +132,10 @@
           </div>
         </section>
         <section>
-          <div class="heading centered" id="installation">
+          <div class="heading centered">
             <h2 class="no-top-margin">Get Started</h2>
             <p class="paragraph m secondary">
-              Install Compartment and start managing your Docker services for local development.
+              Install Compartment and start managing your local services for development.
               Compatible with macOS, Linux, and Windows (via WSL2).
             </p>
           </div>
@@ -176,7 +155,6 @@
                 <p class="paragraph m bold">Docker Required</p>
                 <p class="paragraph m secondary">
                   Ensure Docker is installed and running on your system.
-                  Compartment manages Docker containers for your services.
                 </p>
               </div>
             </div>
@@ -187,8 +165,7 @@
                   Verify Installation
                 </p>
                 <p class="paragraph m secondary">
-                  Run <code>compartment check</code> to verify your environment setup
-                  and ensure everything is configured correctly.
+                  Run <code>compartment check</code> to verify your setup.
                 </p>
               </div>
             </div>
