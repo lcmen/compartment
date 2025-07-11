@@ -28,7 +28,7 @@ jobs:
     - name: Build
       run: go build -o compartment
 
-    - name: Extract or use provided version
+    - name: Use provided version
       run: |
         version="${{ github.event.inputs.version }}"
         echo "VERSION=$version" >> $GITHUB_ENV
@@ -51,8 +51,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Extract or use provided version
-        id: extract_version
+      - name: Use provided version
         run: |
           version="${{ github.event.inputs.version }}"
           echo "VERSION=$version" >> $GITHUB_ENV
