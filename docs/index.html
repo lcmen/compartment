@@ -40,7 +40,7 @@
       <header class="nav-container">
         <a href="index.html" class="nav-brand"><strong>Compartment</strong></a>
         <nav role="navigation" class="nav-menu" data-navigation>
-          <a href="https://github.com/lcmen/compartment" class="nav-link">GitHub ↗</a>
+          <a href="https://github.com/lcmen/compartment" class="nav-link" rel="noopener noreferrer">GitHub ↗</a>
           <a href="#installation" class="nav-link">Installation</a>
           <a href="#features" class="nav-link">Features</a>
           <div class="button-group stacked margin-top-l mobile-only">
@@ -48,7 +48,7 @@
           </div>
         </nav>
         <div class="button-group">
-          <a href="https://github.com/lcmen/compartment" class="button ghost compact hide-on-mobile">
+          <a href="https://github.com/lcmen/compartment" class="button ghost compact hide-on-mobile" rel="noopener noreferrer">
             <div class="fa-brands fa-github icon l"></div>
             <div class="paragraph s tertiary">Star</div>
           </a>
@@ -61,7 +61,7 @@
       <main>
         <section>
           <div class="heading hero centered">
-            <a href="https://github.com/lcmen/compartment/releases" class="eyebrow">Open Source Tool</a>
+            <a href="https://github.com/lcmen/compartment/releases" class="eyebrow" rel="noopener noreferrer">Open Source Tool</a>
             <h1 class="balanced">
               Local services for development
             </h1>
@@ -69,12 +69,9 @@
               Run multiple local services in parallel without port conflicts. Perfect for multi-project development environments.
             </p>
             <div class="button-group margin-paragraph centered">
-              <a href="#installation" class="button primary">Get Started</a>
-              <a href="https://github.com/lcmen/compartment" class="button tertiary">View on GitHub</a>
+              <a href="#get-started" class="button primary">Get Started</a>
+              <a href="https://github.com/lcmen/compartment" class="button tertiary" rel="noopener noreferrer">View on GitHub</a>
             </div>
-          </div>
-          <div class="image-wide" id="installation">
-            <img src="images/main-ui.svg" width="100%" alt="Main screenshot of the product" />
           </div>
         </section>
         <section>
@@ -115,7 +112,7 @@
           </div>
         </section>
         <section>
-          <div class="heading centered">
+          <div class="heading centered" id="installation">
             <h2 class="no-top-margin">Get Started</h2>
             <p class="paragraph m secondary">
               Install Compartment and start managing your local services for development.
@@ -128,7 +125,7 @@
               <div class="feature-heading">
                 <p class="paragraph m bold">Download Binary</p>
                 <p class="paragraph m secondary">
-                  Download pre-built binaries from <a href="https://github.com/lcmen/compartment/releases" target="_blank">GitHub Releases</a><br>
+                  Download pre-built binaries from <a href="https://github.com/lcmen/compartment/releases" target="_blank" rel="noopener noreferrer">GitHub Releases</a><br>
                 </p>
               </div>
             </div>
@@ -150,6 +147,49 @@
                 <p class="paragraph m secondary">
                   Run <code>compartment check</code> to verify your setup.
                 </p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section>
+          <div class="heading centered">
+            <h2 class="no-top-margin">DNS Configuration</h2>
+            <p class="paragraph m secondary">
+              Configure DNS resolution to access services via their container names.
+            </p>
+          </div>
+          <div class="cards-with-icons-container">
+            <div class="card-with-icon horizontal">
+              <div class="fa-solid fa-network-wired icon xl color-accent"></div>
+              <div class="feature-heading">
+                <p class="paragraph m bold">Start devdns</p>
+                <p class="paragraph m secondary">
+                  Run <code>compartment start devdns</code> to enable DNS resolution for containers.
+                </p>
+              </div>
+            </div>
+            <div class="card-with-icon horizontal">
+              <div class="fa-brands fa-apple icon xl color-accent"></div>
+              <div class="feature-heading">
+                <p class="paragraph m bold">macOS Resolver</p>
+                <p class="paragraph m secondary">
+                  Install <a href="https://github.com/chipmk/docker-mac-net-connect" target="_blank" rel="noopener noreferrer">docker-mac-net-connect</a>
+                  Create <code>/etc/resolver/container</code> file with following content:
+                </p>
+                <pre><code>nameserver 127.0.0.1</code></pre>
+              </div>
+            </div>
+            <div class="card-with-icon horizontal">
+              <div class="fa-brands fa-linux icon xl color-accent"></div>
+              <div class="feature-heading">
+                <p class="paragraph m bold">Linux Network</p>
+                <p class="paragraph m secondary">
+                  Add network interface config to <code>/etc/network/interfaces</code> with DNS settings:
+                </p>
+                <pre><code>auto p3p1
+iface p3p1 inet dhcp
+dns-search container
+dns-nameservers 127.0.0.1</pre></code>
               </div>
             </div>
           </div>
@@ -188,23 +228,23 @@
         <div class="footer-menu">
           <div>
             <p class="paragraph s">
-              © 2025 <a href="https://www.mendelowski.com" ref="noopener" target="_blank">Mendelowski</a>
+              © 2025 <a href="https://www.mendelowski.com" rel="noopener noreferrer" target="_blank">Mendelowski</a>
               <br />
               Built with
-              <a href="https://launchkit.evilmartians.io" ref="noopener" target="_blank">LaunchKit</a>
+              <a href="https://launchkit.evilmartians.io" rel="noopener noreferrer" target="_blank">LaunchKit</a>
             </p>
           </div>
           <div>
             <div class="link-list">
-              <a href="https://github.com/lcmen/compartment" class="icon-link ui s" target="_blank">
+              <a href="https://github.com/lcmen/compartment" class="icon-link ui s" target="_blank" rel="noopener noreferrer">
                 <div class="fa-brands fa-github icon m color-accent"></div>
                 <div class="pseudo-link">GitHub</div>
               </a>
-              <a href="https://github.com/lcmen/compartment/releases" class="icon-link ui s" target="_blank">
+              <a href="https://github.com/lcmen/compartment/releases" class="icon-link ui s" target="_blank" rel="noopener noreferrer">
                 <div class="fa-solid fa-tag icon m color-accent"></div>
                 <div class="pseudo-link">Releases</div>
               </a>
-              <a href="https://github.com/lcmen/compartment/issues" class="icon-link ui s" target="_blank">
+              <a href="https://github.com/lcmen/compartment/issues" class="icon-link ui s" target="_blank" rel="noopener noreferrer">
                 <div class="fa-solid fa-bug icon m color-accent"></div>
                 <div class="pseudo-link">Issues</div>
               </a>
@@ -212,7 +252,7 @@
           </div>
         </div>
         <div class="link-list-horizontal">
-          <a href="https://github.com/lcmen/compartment/blob/main/LICENSE" class="ui s tertiary">MIT License</a>
+          <a href="https://github.com/lcmen/compartment/blob/main/LICENSE" class="ui s tertiary" rel="noopener noreferrer">MIT License</a>
         </div>
       </footer>
     </div>

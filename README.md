@@ -96,6 +96,15 @@ Or refer to their [installation guide](https://github.com/chipmk/docker-mac-net-
 
 If you are using Linux, you can usually access containers directly via their IPs without extra setup.
 
+Add the following to `/etc/network/interfaces`:
+
+```
+auto p3p1
+iface p3p1 inet dhcp
+dns-search container
+dns-nameservers 127.0.0.1
+```
+
 ## Testing
 
 If you have configured everything correctly, you should be able to start the service and access it. For example:
