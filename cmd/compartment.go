@@ -20,6 +20,18 @@ Compartment - your assistant for spinning up services needed for local developme
 Usage:
   compartment [flags] <command> <service> [version]
 
+Commands:
+  start     Start a service
+  stop      Stop a service
+  status    Show service status
+  check     Check devdns container
+  help      Show this help message
+
+Services:
+  postgres  PostgreSQL database
+  redis     Redis cache
+  devdns    Development DNS server
+
 Flags:
 `
 
@@ -92,7 +104,7 @@ func parseArgs() (*service.Service, string, error) {
 }
 
 func getServiceForCommand(cmd, name string, args []string) (*service.Service, error) {
-	if cmd == "check" {
+	if cmd == "check" || cmd == "help" {
 		return nil, nil
 	}
 
@@ -104,20 +116,16 @@ func getServiceForCommand(cmd, name string, args []string) (*service.Service, er
 	ver := getArgOrDefault(args, 2, "latest")
 	serviceName := getServiceName(kind, ver)
 
+	containerName := serviceName
+	if name != "" {
+		containerName = name
+	}
+
 	if cmd == "stop" || cmd == "status" {
-		containerName := serviceName
-		if name != "" {
-			containerName = name
-		}
 		return service.NewServiceFromExistingContainer(containerName)
+	} else {
+		return service.NewService(containerName, kind, ver, nil)
 	}
-
-	srv, err := service.NewService(serviceName, kind, ver, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating service: %w", err)
-	}
-
-	return srv, nil
 }
 
 func getServiceName(kind string, ver string) string {
