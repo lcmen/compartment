@@ -79,7 +79,11 @@ Create a file at `/etc/resolver/container` with the following content:
 nameserver 127.0.0.1
 ```
 
-On macOS, you also need [docker-mac-net-connect](https://github.com/chipmk/docker-mac-net-connect) to be able to access containers directly via their IPs.
+##### Docker Desktop for Mac
+
+*This is not needed for OrbStack as it provides access to containers via their IPs by default.*
+
+If you use Docker Desktop on macOS, you also need [docker-mac-net-connect](https://github.com/chipmk/docker-mac-net-connect) to be able to access containers directly via their IPs.
 
 **Important:** You must disable "Resource Saver" in Docker Desktop for Mac for docker-mac-net-connect to work properly. Go to Docker Desktop Settings → Resources → Advanced and uncheck "Resource Saver". See [this issue](https://github.com/chipmk/docker-mac-net-connect/issues/36) for details.
 
