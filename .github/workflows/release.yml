@@ -38,7 +38,7 @@ jobs:
         GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o compartment-${{ matrix.goos }}-${{ matrix.goarch }}
 
     - name: Upload binaries
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: compartment-${{ matrix.goos }}-${{ matrix.goarch }}
         path: compartment-${{ matrix.goos }}-${{ matrix.goarch }}
