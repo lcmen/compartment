@@ -3,7 +3,7 @@ module compartment
 go 1.24.3
 
 require (
-	github.com/docker/docker v28.5.1+incompatible
+	github.com/docker/docker v28.5.2+incompatible
 	github.com/docker/go-connections v0.6.0
 )
 
