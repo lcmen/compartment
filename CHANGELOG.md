@@ -2,6 +2,8 @@
 
 All notable changes to test improvements will be documented in this file.
 
+## 0.1.3
+
 Dependency updates
 
 ## 0.1.2
