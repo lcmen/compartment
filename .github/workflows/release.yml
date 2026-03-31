@@ -4,9 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version (e.g., v1.0.0)'
+        description: "Release version (e.g., v1.0.0)"
         required: true
-        type: string
 
 jobs:
   build:
@@ -18,30 +17,19 @@ jobs:
         goos: [linux, darwin]
         goarch: [amd64, arm64]
     steps:
-    - uses: actions/checkout@v6
-
-    - name: Set up Go
-      uses: actions/setup-go@v6
-      with:
-        go-version: '1.24'
-
-    - name: Build
-      run: go build -o compartment
-
-    - name: Use provided version
-      run: |
-        version="${{ github.event.inputs.version }}"
-        echo "VERSION=$version" >> $GITHUB_ENV
-
-    - name: Build binaries
-      run: |
-        GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o compartment-${{ matrix.goos }}-${{ matrix.goarch }}
-
-    - name: Upload binaries
-      uses: actions/upload-artifact@v7
-      with:
-        name: compartment-${{ matrix.goos }}-${{ matrix.goarch }}
-        path: compartment-${{ matrix.goos }}-${{ matrix.goarch }}
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - name: Build
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: go build -o compartment-${{ matrix.goos }}-${{ matrix.goarch }}
+      - uses: actions/upload-artifact@v7
+        with:
+          name: compartment-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: compartment-${{ matrix.goos }}-${{ matrix.goarch }}
 
   release:
     needs: build
@@ -49,21 +37,8 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
-
-      - name: Use provided version
-        run: |
-          version="${{ github.event.inputs.version }}"
-          echo "VERSION=$version" >> $GITHUB_ENV
-
-      - name: Download all artifacts
-        uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@v8
+      - uses: ncipollo/release-action@v1
         with:
-          path: ./artifacts
-
-      - name: Create Release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ env.VERSION }}
-          name: Release ${{ env.VERSION }}
-          artifacts: ./artifacts/**
+          tag: ${{ github.event.inputs.version }}
+          artifacts: "compartment-*/compartment-*"

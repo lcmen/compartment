@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compartment — Local services for development</title>
+    <meta name="description" content="Run multiple local services in parallel without port conflicts. Perfect for multi-project development environments." />
+
+    <!-- Favicon -->
+    <link rel="icon" href="images/favicon/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="images/favicon/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="images/favicon/apple-touch-icon.png" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="bg-gray-950 text-gray-100 min-h-screen">
+    <div class="max-w-2xl mx-auto px-6 py-20">
+
+      <!-- Header -->
+      <pre class="text-green-400 text-sm mb-6">
+  ___  ___  _ __ ___  _ __   __ _ _ __| |_ _ __ ___   ___ _ __ | |_
+ / __|/ _ \| '_ ` _ \| '_ \ / _` | '__| __| '_ ` _ \ / _ \ '_ \| __|
+| (__| (_) | | | | | | |_) | (_| | |  | |_| | | | | |  __/ | | | |_
+ \___|\___/|_| |_| |_| .__/ \__,_|_|   \__|_| |_| |_|\___|_| |_|\__|
+                      |_|</pre>
+
+      <p class="text-lg text-gray-300 mb-4">
+        Run multiple local services in parallel without port conflicts.
+        Perfect for multi-project development environments.
+      </p>
+
+      <p class="text-gray-400 text-sm mb-8">
+        Spin up multiple versions of PostgreSQL, Redis, and other services
+        simultaneously — each isolated by name and accessible via DNS.
+      </p>
+
+      <div class="flex gap-4 mb-16">
+        <a
+          href="https://github.com/lcmen/compartment"
+          class="bg-green-600 hover:bg-green-700 text-white font-medium px-5 py-2 rounded transition"
+        >
+          GitHub
+        </a>
+        <a
+          href="https://github.com/lcmen/compartment/releases"
+          class="bg-gray-800 hover:bg-gray-700 text-white font-medium px-5 py-2 rounded border border-gray-700 transition"
+        >
+          Download
+        </a>
+      </div>
+
+      <!-- Features -->
+      <h2 class="text-xl font-semibold mb-4">Key Features</h2>
+
+      <div class="grid grid-cols-1 gap-4 mb-16">
+        <div class="bg-gray-900 rounded p-4">
+          <h3 class="font-semibold text-green-400 mb-1">Parallel Service Instances</h3>
+          <p class="text-sm text-gray-400">Run multiple instances of the same service with different versions simultaneously.</p>
+        </div>
+        <div class="bg-gray-900 rounded p-4">
+          <h3 class="font-semibold text-green-400 mb-1">No Port Conflicts</h3>
+          <p class="text-sm text-gray-400">Access services via unique DNS names, avoiding port conflicts entirely.</p>
+        </div>
+        <div class="bg-gray-900 rounded p-4">
+          <h3 class="font-semibold text-green-400 mb-1">Data Persistence</h3>
+          <p class="text-sm text-gray-400">Data persists between container restarts with automatic volume management.</p>
+        </div>
+      </div>
+
+      <!-- Installation -->
+      <h2 class="text-xl font-semibold mb-4" id="installation">Quick start</h2>
+
+      <p class="text-gray-400 text-sm mb-4">
+        Requires <a href="https://docs.docker.com/get-docker/" class="text-green-400 hover:text-green-300 transition">Docker</a> installed and running.
+      </p>
+
+      <code class="block bg-gray-900 rounded p-4 text-sm mb-8 overflow-x-auto">
+        <span class="text-gray-500"># macOS</span><br />
+        brew tap lcmen/extra<br />
+        brew install compartment<br />
+        <br />
+        <span class="text-gray-500"># Linux / Windows (WSL2)</span><br />
+        ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')<br />
+        URL=https://github.com/lcmen/compartment/releases/latest/download<br />
+        curl -fsSL $URL/compartment-linux-$ARCH -o ~/.local/bin/compartment<br />
+        chmod +x ~/.local/bin/compartment<br />
+        <br />
+        <span class="text-gray-500"># Verify installation</span><br />
+        compartment check
+      </code>
+
+      <!-- DNS Configuration -->
+      <h2 class="text-xl font-semibold mb-4" id="dns">DNS Configuration</h2>
+
+      <p class="text-gray-400 text-sm mb-4">
+        Start the built-in DNS server so services are reachable by name:
+      </p>
+
+      <code class="block bg-gray-900 rounded p-4 text-sm mb-8 overflow-x-auto">
+        compartment start devdns
+      </code>
+
+      <h3 class="text-base font-semibold mb-3">Nameserver</h3>
+
+      <p class="text-gray-400 text-sm mb-2">
+        <span class="text-gray-300 font-medium">macOS (Docker Desktop)</span> — create
+        <code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">/etc/resolver/container</code>:
+      </p>
+
+      <code class="block bg-gray-900 rounded p-4 text-sm mb-2 overflow-x-auto">
+        nameserver 127.0.0.1
+      </code>
+
+      <p class="text-gray-500 text-xs mb-4">
+        Not needed for OrbStack — it handles DNS resolution automatically.
+      </p>
+
+      <p class="text-gray-400 text-sm mb-2">
+        <span class="text-gray-300 font-medium">Linux</span> — add to
+        <code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">/etc/network/interfaces</code>:
+      </p>
+
+      <code class="block bg-gray-900 rounded p-4 text-sm mb-16 overflow-x-auto">
+        auto p3p1<br />
+        iface p3p1 inet dhcp<br />
+        dns-search container<br />
+        dns-nameservers 127.0.0.1
+      </code>
+
+      <!-- Example Usage -->
+      <h2 class="text-xl font-semibold mb-4">Example usage</h2>
+
+      <code class="block bg-gray-900 rounded p-4 text-sm mb-16 overflow-x-auto">
+        <span class="text-gray-500"># Start PostgreSQL 15 for legacy project</span><br />
+        compartment -n legacy.db start postgresql 15<br />
+        <br />
+        <span class="text-gray-500"># Start PostgreSQL 17 for new project</span><br />
+        compartment -n newapp.db start postgresql 17<br />
+        <br />
+        <span class="text-gray-500"># Add Redis for caching</span><br />
+        compartment -n newapp.cache start redis 8<br />
+        <br />
+        <span class="text-gray-500"># Check what's running</span><br />
+        compartment status legacy.db<br />
+        compartment status newapp.db<br />
+        <br />
+        <span class="text-gray-500"># Access via DNS (with devdns)</span><br />
+        psql -h legacy.db.container -U postgres<br />
+        psql -h newapp.db.container -U postgres
+      </code>
+
+      <!-- Footer -->
+      <footer class="text-gray-600 text-sm flex justify-between">
+        <span>
+          2026 &copy;
+          <a href="https://mendelowski.com" target="_blank" class="hover:text-gray-400 transition">
+            Lucas Mendelowski
+          </a>
+        </span>
+        <a href="https://github.com/lcmen/compartment/blob/main/LICENSE" target="_blank" class="hover:text-gray-400 transition">
+          MIT License
+        </a>
+      </footer>
+
+    </div>
+  </body>
+</html>
