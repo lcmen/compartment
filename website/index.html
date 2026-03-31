@@ -6,11 +6,6 @@
     <title>Compartment — Local services for development</title>
     <meta name="description" content="Run multiple local services in parallel without port conflicts. Perfect for multi-project development environments." />
 
-    <!-- Favicon -->
-    <link rel="icon" href="images/favicon/favicon.ico" sizes="32x32" />
-    <link rel="icon" href="images/favicon/icon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="images/favicon/apple-touch-icon.png" />
-
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
 
@@ -101,7 +96,11 @@
         compartment start devdns
       </code>
 
-      <h3 class="text-base font-semibold mb-3">Nameserver</h3>
+      <h3 class="text-base font-semibold mb-3">Resolver</h3>
+
+      <p class="text-gray-400 text-sm mb-4">
+        The custom resolver allows you to route all .container requests to your DNS server running inside the devdns container.
+      </p>
 
       <p class="text-gray-400 text-sm mb-2">
         <span class="text-gray-300 font-medium">macOS (Docker Desktop)</span> — create
@@ -121,7 +120,7 @@
         <code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">/etc/network/interfaces</code>:
       </p>
 
-      <code class="block bg-gray-900 rounded p-4 text-sm mb-16 overflow-x-auto">
+      <code class="block bg-gray-900 rounded p-4 text-sm mb-8 overflow-x-auto">
         auto p3p1<br />
         iface p3p1 inet dhcp<br />
         dns-search container<br />
