@@ -88,49 +88,97 @@
       <!-- DNS Configuration -->
       <h2 class="text-xl font-semibold mb-4" id="dns">DNS Configuration</h2>
 
-      <p class="text-gray-400 text-sm mb-4">
+      <h3 class="text-base font-semibold mb-3">DNS Server</h3>
+
+      <p class="text-gray-400 text-sm mb-2">
         Start the built-in DNS server so services are reachable by name:
       </p>
 
-      <code class="block bg-gray-900 rounded p-4 text-sm mb-8 overflow-x-auto">
+      <code class="block bg-gray-900 rounded p-4 text-sm mb-2 overflow-x-auto">
         compartment start devdns
       </code>
 
+      <p class="text-gray-400 text-sm mb-2">
+        On WSL2, port 53 is owned by <code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">systemd-resolved</code> — use a different host port, then restart the resolver so it picks up the running devdns (complete the <a href="#wsl2-resolver" class="text-gray-300 underline">WSL2 resolver setup</a> below first):
+      </p>
+
+      <code class="block bg-gray-900 rounded p-4 text-sm mb-8 overflow-x-auto whitespace-pre">compartment -e DNS_PORT=5353 start devdns
+sudo systemctl restart systemd-resolved</code>
+
       <h3 class="text-base font-semibold mb-3">Resolver</h3>
 
-      <p class="text-gray-400 text-sm mb-4">
+      <p class="text-gray-400 text-sm mb-6">
         The custom resolver allows you to route all .container requests to your DNS server running inside the devdns container.
       </p>
 
+      <h4 class="text-sm font-semibold text-gray-300 mb-2">macOS (Docker Desktop)</h4>
+
       <p class="text-gray-400 text-sm mb-2">
-        <span class="text-gray-300 font-medium">macOS (Docker Desktop)</span> — create
-        <code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">/etc/resolver/container</code>:
+        Create <code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">/etc/resolver/container</code>:
       </p>
 
       <code class="block bg-gray-900 rounded p-4 text-sm mb-2 overflow-x-auto">
         nameserver 127.0.0.1
       </code>
 
-      <p class="text-gray-500 text-xs mb-4">
+      <p class="text-gray-500 text-xs mb-6">
         Not needed for OrbStack — it handles DNS resolution automatically.
       </p>
 
+      <h4 class="text-sm font-semibold text-gray-300 mb-2">Linux</h4>
+
       <p class="text-gray-400 text-sm mb-2">
-        <span class="text-gray-300 font-medium">Linux</span> — add to
-        <code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">/etc/network/interfaces</code>:
+        Configure <code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">systemd-resolved</code> to forward <code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">*.container</code> queries to devdns:
       </p>
 
-      <code class="block bg-gray-900 rounded p-4 text-sm mb-8 overflow-x-auto">
-        auto p3p1<br />
-        iface p3p1 inet dhcp<br />
-        dns-search container<br />
-        dns-nameservers 127.0.0.1
-      </code>
+      <code class="block bg-gray-900 rounded p-4 text-sm mb-2 overflow-x-auto whitespace-pre">sudo mkdir -p /etc/systemd/resolved.conf.d
+
+sudo tee /etc/systemd/resolved.conf.d/devdns.conf &lt;&lt; 'EOF'
+[Resolve]
+DNS=127.0.0.1
+Domains=~container
+EOF
+
+sudo systemctl restart systemd-resolved</code>
+
+      <h4 class="text-sm font-semibold text-gray-300 mb-2" id="wsl2-resolver">Linux (WSL2)</h4>
+
+      <p class="text-gray-400 text-sm mb-2">
+        WSL overwrites <code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">/etc/resolv.conf</code> on startup, bypassing <code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">systemd-resolved</code>. Fix this first (run once):
+      </p>
+
+      <code class="block bg-gray-900 rounded p-4 text-sm mb-2 overflow-x-auto whitespace-pre"><span class="text-gray-500"># Stop WSL from overwriting resolv.conf</span>
+echo -e "[network]\ngenerateResolvConf = false" | sudo tee -a /etc/wsl.conf
+
+<span class="text-gray-500"># Append systemd-resolved nameserver to resolv.conf</span>
+echo 'nameserver 127.0.0.53' | sudo tee -a /etc/resolv.conf
+
+<span class="text-gray-500"># Restart WSL from PowerShell to apply wsl.conf changes</span>
+wsl.exe --shutdown</code>
+
+      <p class="text-gray-500 text-xs mb-4">
+        All existing DNS continues to work — internet, VPN, and local hostnames resolve through the Windows DNS fallback as before.
+        Fully reversible: remove the <code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">[network]</code> block from <code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">/etc/wsl.conf</code> and restart WSL to restore automatic DNS management.
+      </p>
+
+      <p class="text-gray-400 text-sm mb-2">
+        Configure <code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">systemd-resolved</code> to forward <code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">*.container</code> queries to devdns and Windows DNS as fallback:
+      </p>
+
+      <code class="block bg-gray-900 rounded p-4 text-sm mb-8 overflow-x-auto whitespace-pre">sudo mkdir -p /etc/systemd/resolved.conf.d
+
+sudo tee /etc/systemd/resolved.conf.d/devdns.conf &lt;&lt; 'EOF'
+[Resolve]
+DNS=127.0.0.1:5353 10.255.255.254
+Domains=~container ~.
+EOF
+
+sudo systemctl restart systemd-resolved</code>
 
       <!-- Example Usage -->
       <h2 class="text-xl font-semibold mb-4">Example usage</h2>
 
-      <code class="block bg-gray-900 rounded p-4 text-sm mb-16 overflow-x-auto">
+      <code class="block bg-gray-900 rounded p-4 text-sm mb-8 overflow-x-auto">
         <span class="text-gray-500"># Start PostgreSQL 15 for legacy project</span><br />
         compartment -n legacy.db start postgresql 15<br />
         <br />
@@ -148,6 +196,28 @@
         psql -h legacy.db.container -U postgres<br />
         psql -h newapp.db.container -U postgres
       </code>
+
+      <!-- Services -->
+      <h2 class="text-xl font-semibold mb-4">Services</h2>
+
+      <div class="mb-4">
+        <h3 class="text-base font-semibold mb-1">PostgreSQL <span class="text-gray-500 font-normal text-sm">— default version: 18</span></h3>
+        <p class="text-gray-400 text-sm mb-2">Image: <code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">postgres:&lt;version&gt;</code></p>
+        <table class="w-full text-sm mb-4">
+          <thead><tr class="text-left text-gray-500 border-b border-gray-800"><th class="pb-1 pr-4 font-medium">Variable</th><th class="pb-1 font-medium">Default</th></tr></thead>
+          <tbody class="text-gray-400">
+            <tr class="border-b border-gray-800/50"><td class="py-1.5 pr-4"><code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">POSTGRES_USER</code></td><td class="py-1.5"><code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">postgres</code></td></tr>
+            <tr class="border-b border-gray-800/50"><td class="py-1.5 pr-4"><code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">POSTGRES_PASSWORD</code></td><td class="py-1.5"><code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">postgres</code></td></tr>
+            <tr><td class="py-1.5 pr-4"><code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">POSTGRES_DB</code></td><td class="py-1.5"><code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">postgres</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mb-16">
+        <h3 class="text-base font-semibold mb-1">Redis <span class="text-gray-500 font-normal text-sm">— default version: 8</span></h3>
+        <p class="text-gray-400 text-sm mb-2">Image: <code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">redis:&lt;version&gt;</code></p>
+        <p class="text-gray-500 text-xs mb-4">No environment variables.</p>
+      </div>
 
       <!-- Footer -->
       <footer class="text-gray-600 text-sm flex justify-between">

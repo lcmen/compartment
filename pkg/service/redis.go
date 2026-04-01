@@ -8,9 +8,17 @@ import (
 	"os"
 )
 
+const defaultRedisVersion = "8"
+
 var defaultRedisEnv = []string{}
 
 func NewRedisService(name, service, version string, env []string) (*Service, error) {
+	if version == "" {
+		version = defaultRedisVersion
+	}
+	if name == "" {
+		name = fmt.Sprintf("%s.%s", version, service)
+	}
 	env = append(defaultRedisEnv, env...)
 	volumes := getRedisVolumes(name)
 

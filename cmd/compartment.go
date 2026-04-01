@@ -98,12 +98,12 @@ func parseArgs() (*service.Service, string, error) {
 	}
 
 	cmd := getArgOrDefault(args, 0, "")
-	srv, err := getServiceForCommand(cmd, name, args)
+	srv, err := getServiceForCommand(cmd, name, args, envs)
 
 	return srv, cmd, err
 }
 
-func getServiceForCommand(cmd, name string, args []string) (*service.Service, error) {
+func getServiceForCommand(cmd, name string, args []string, envs []string) (*service.Service, error) {
 	if cmd == "check" || cmd == "help" {
 		return nil, nil
 	}
@@ -113,26 +113,9 @@ func getServiceForCommand(cmd, name string, args []string) (*service.Service, er
 	}
 
 	kind := getArgOrDefault(args, 1, "")
-	ver := getArgOrDefault(args, 2, "latest")
-	serviceName := getServiceName(kind, ver)
+	ver := getArgOrDefault(args, 2, "")
 
-	containerName := serviceName
-	if name != "" {
-		containerName = name
-	}
-
-	if cmd == "stop" || cmd == "status" {
-		return service.NewServiceFromExistingContainer(containerName)
-	} else {
-		return service.NewService(containerName, kind, ver, nil)
-	}
-}
-
-func getServiceName(kind string, ver string) string {
-	if ver == "latest" {
-		return kind
-	}
-	return fmt.Sprintf("%s.%s", ver, kind)
+	return service.NewService(name, kind, ver, envs)
 }
 
 func getArgOrDefault(args []string, i int, def string) string {
