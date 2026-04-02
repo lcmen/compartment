@@ -19,9 +19,6 @@ type Service struct {
 }
 
 func NewService(name, service, version string, env []string) (*Service, error) {
-	if name == "" {
-		return nil, fmt.Errorf("service name cannot be empty")
-	}
 	if service == "" {
 		return nil, fmt.Errorf("service type cannot be empty")
 	}
