@@ -22,12 +22,13 @@ const (
 )
 
 type Container struct {
-	Name  string
-	Image string
-	State State
-	Err   error
-	cid   string
-	cli   *client.Client
+	Name   string
+	Image  string
+	State  State
+	Labels map[string]string
+	Err    error
+	cid    string
+	cli    *client.Client
 }
 
 func NewContainer(name string) (*Container, error) {
@@ -91,7 +92,7 @@ func ExistingContainer(name string) (*Container, error) {
 	}, nil
 }
 
-func (c *Container) Create(image string, env []string, volumes []mount.Mount, ports nat.PortMap) error {
+func (c *Container) Create(image string, env []string, volumes []mount.Mount, ports nat.PortMap, labels map[string]string) error {
 	if c.State != StateRemoved {
 		return fmt.Errorf("container not in removable state: %v", c.State)
 	}
@@ -105,7 +106,7 @@ func (c *Container) Create(image string, env []string, volumes []mount.Mount, po
 
 	resp, err := c.cli.ContainerCreate(
 		context.Background(),
-		&container.Config{Image: image, Env: env, ExposedPorts: exposedPorts(ports)},
+		&container.Config{Image: image, Env: env, ExposedPorts: exposedPorts(ports), Labels: labels},
 		&container.HostConfig{AutoRemove: true, Mounts: volumes, PortBindings: ports},
 		nil,
 		nil,

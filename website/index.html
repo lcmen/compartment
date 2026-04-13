@@ -180,21 +180,20 @@ sudo systemctl restart systemd-resolved</code>
 
       <code class="block bg-gray-900 rounded p-4 text-sm mb-8 overflow-x-auto">
         <span class="text-gray-500"># Start PostgreSQL 15 for legacy project</span><br />
-        compartment -n legacy.db start postgresql 15<br />
+        compartment -n legacy start postgres 15<br />
         <br />
         <span class="text-gray-500"># Start PostgreSQL 17 for new project</span><br />
-        compartment -n newapp.db start postgresql 17<br />
+        compartment -n newapp start postgres 17<br />
         <br />
         <span class="text-gray-500"># Add Redis for caching</span><br />
-        compartment -n newapp.cache start redis 8<br />
+        compartment -n newapp start redis 8<br />
         <br />
-        <span class="text-gray-500"># Check what's running</span><br />
-        compartment status legacy.db<br />
-        compartment status newapp.db<br />
+        <span class="text-gray-500"># List all managed containers</span><br />
+        compartment list<br />
         <br />
         <span class="text-gray-500"># Access via DNS (with devdns)</span><br />
-        psql -h legacy.db.container -U postgres<br />
-        psql -h newapp.db.container -U postgres
+        psql -h legacy.postgres.container -U postgres<br />
+        psql -h newapp.postgres.container -U postgres
       </code>
 
       <!-- Services -->

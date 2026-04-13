@@ -17,8 +17,9 @@ func NewRedisService(name, service, version string, env []string) (*Service, err
 		version = defaultRedisVersion
 	}
 	if name == "" {
-		name = fmt.Sprintf("%s.%s", version, service)
+		name = version
 	}
+	name = fmt.Sprintf("%s.%s", name, service)
 	env = append(defaultRedisEnv, env...)
 	volumes, err := getRedisVolumes(name)
 	if err != nil {
@@ -28,6 +29,7 @@ func NewRedisService(name, service, version string, env []string) (*Service, err
 	return &Service{
 		Name:    name,
 		Image:   fmt.Sprintf("%s:%s", service, version),
+		Kind:    service,
 		Version: version,
 		Env:     env,
 		Volumes: volumes,
