@@ -25,7 +25,10 @@ func NewPostgresService(name, service, version string, env []string) (*Service, 
 		name = fmt.Sprintf("%s.%s", version, service)
 	}
 	env = append(defaultPostgresEnv, env...)
-	volumes := getPostgresVolumes(name, version)
+	volumes, err := getPostgresVolumes(name, version)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Service{
 		Name:    name,
@@ -37,7 +40,7 @@ func NewPostgresService(name, service, version string, env []string) (*Service, 
 	}, nil
 }
 
-func getPostgresVolumes(name, version string) []mount.Mount {
+func getPostgresVolumes(name, version string) ([]mount.Mount, error) {
 	var target string
 	major, err := strconv.Atoi(version)
 	if err != nil || major >= 18 {
@@ -46,22 +49,29 @@ func getPostgresVolumes(name, version string) []mount.Mount {
 		target = "/var/lib/postgresql/data"
 	}
 
+	source, err := preparePostgresDataDir(name)
+	if err != nil {
+		return nil, err
+	}
+
 	return []mount.Mount{
 		{
 			Type:   mount.TypeBind,
-			Source: preparePostgresDataDir(name),
+			Source: source,
 			Target: target,
 		},
-	}
+	}, nil
 }
 
-func preparePostgresDataDir(name string) string {
+func preparePostgresDataDir(name string) (string, error) {
 	dataDir := configuration.Get().DataDir
 	dir := fmt.Sprintf("%s/postgres/%s", dataDir, name)
 
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		os.MkdirAll(dir, 0755)
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			return "", err
+		}
 	}
 
-	return dir
+	return dir, nil
 }

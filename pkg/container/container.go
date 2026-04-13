@@ -57,7 +57,7 @@ func NewContainer(name string) (*Container, error) {
 		state = StateRemoved
 	}
 
-	return &Container{Name: name, State: state, cid: cid, cli: cli}, nil
+	return &Container{Name: name, Image: containerJSON.Image, State: state, cid: cid, cli: cli}, nil
 }
 
 func ExistingContainer(name string) (*Container, error) {
@@ -75,10 +75,17 @@ func ExistingContainer(name string) (*Container, error) {
 		}
 	}
 
+	var state State = StateRemoved
+	if containerJSON.State.Running {
+		state = StateRunning
+	} else if containerJSON.State.Status == "exited" {
+		state = StateStopped
+	}
+
 	return &Container{
 		Name:  name,
 		Image: containerJSON.Image,
-		State: StateRunning,
+		State: state,
 		cid:   containerJSON.ID,
 		cli:   cli,
 	}, nil

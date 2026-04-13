@@ -61,10 +61,12 @@ func (s *Service) Start() error {
 	defer cnt.Close()
 
 	if cnt.State == container.StateRunning {
-		printServiceInfo(cnt, s)
+		fmt.Printf("Service `%s` is already running.\n", cnt.Name)
 		return nil
 	}
 
+	// A stopped container cannot be restarted with updated config (image, env, volumes).
+	// Remove it so Create() can provision a fresh one with the current Service settings.
 	if cnt.State == container.StateStopped {
 		logging.Debug(fmt.Sprintf("Removing stopped container %s to start it again", cnt.Name))
 		cnt.Remove()

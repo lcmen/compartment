@@ -20,7 +20,10 @@ func NewRedisService(name, service, version string, env []string) (*Service, err
 		name = fmt.Sprintf("%s.%s", version, service)
 	}
 	env = append(defaultRedisEnv, env...)
-	volumes := getRedisVolumes(name)
+	volumes, err := getRedisVolumes(name)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Service{
 		Name:    name,
@@ -32,24 +35,31 @@ func NewRedisService(name, service, version string, env []string) (*Service, err
 	}, nil
 }
 
-func getRedisVolumes(name string) []mount.Mount {
+func getRedisVolumes(name string) ([]mount.Mount, error) {
+	source, err := prepareRedisDataDir(name)
+	if err != nil {
+		return nil, err
+	}
+
 	return []mount.Mount{
 		{
 			Type:   mount.TypeBind,
-			Source: prepareRedisDataDir(name),
+			Source: source,
 			Target: "/data",
 		},
-	}
+	}, nil
 }
 
-func prepareRedisDataDir(name string) string {
+func prepareRedisDataDir(name string) (string, error) {
 	dataDir := configuration.Get().DataDir
 
 	dir := fmt.Sprintf("%s/redis/%s", dataDir, name)
 
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		os.MkdirAll(dir, 0755)
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			return "", err
+		}
 	}
 
-	return dir
+	return dir, nil
 }
