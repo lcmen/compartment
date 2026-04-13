@@ -19,7 +19,6 @@ func List() ([]Container, error) {
 	f := filters.NewArgs(filters.Arg("label", "compartment=true"))
 
 	containers, err := cli.ContainerList(context.Background(), container.ListOptions{
-		All:     true,
 		Filters: f,
 	})
 	if err != nil {
@@ -33,20 +32,9 @@ func List() ([]Container, error) {
 			name = strings.TrimPrefix(c.Names[0], "/")
 		}
 
-		var state State
-		switch c.State {
-		case "running":
-			state = StateRunning
-		case "exited":
-			state = StateStopped
-		default:
-			state = StateRemoved
-		}
-
 		result = append(result, Container{
 			Name:   name,
 			Image:  c.Image,
-			State:  state,
 			Labels: c.Labels,
 		})
 	}

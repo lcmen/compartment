@@ -24,8 +24,8 @@ const (
 type Container struct {
 	Name   string
 	Image  string
-	State  State
 	Labels map[string]string
+	State  State
 	Err    error
 	cid    string
 	cli    *client.Client
