@@ -24,7 +24,9 @@ func init() {
 	}
 
 	if _, err := os.Stat(dataDir); os.IsNotExist(err) {
-		os.MkdirAll(dataDir, 0755)
+		if err := os.MkdirAll(dataDir, 0755); err != nil {
+			panic(fmt.Sprintf("failed to create data directory %s: %v", dataDir, err))
+		}
 	}
 
 	config = &Configuration{
