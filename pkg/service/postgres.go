@@ -22,8 +22,9 @@ func NewPostgresService(name, service, version string, env []string) (*Service, 
 		version = defaultPostgresVersion
 	}
 	if name == "" {
-		name = fmt.Sprintf("%s.%s", version, service)
+		name = version
 	}
+	name = fmt.Sprintf("%s.%s", name, service)
 	env = append(defaultPostgresEnv, env...)
 	volumes, err := getPostgresVolumes(name, version)
 	if err != nil {
@@ -33,6 +34,7 @@ func NewPostgresService(name, service, version string, env []string) (*Service, 
 	return &Service{
 		Name:    name,
 		Image:   fmt.Sprintf("%s:%s", service, version),
+		Kind:    service,
 		Version: version,
 		Env:     env,
 		Volumes: volumes,

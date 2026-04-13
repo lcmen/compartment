@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"compartment/pkg/check"
+	"compartment/pkg/container"
 	"compartment/pkg/service"
 	"flag"
 	"fmt"
@@ -24,6 +25,7 @@ Commands:
   start     Start a service
   stop      Stop a service
   status    Show service status
+  list      List all compartment-managed containers
   check     Check devdns container
   help      Show this help message
 
@@ -64,6 +66,11 @@ func Run() error {
 		if err != nil {
 			return fmt.Errorf("error getting container status: %w", err)
 		}
+	case "list":
+		err := container.List()
+		if err != nil {
+			return fmt.Errorf("error listing containers: %w", err)
+		}
 	case "check":
 		err := check.Check()
 		if err != nil {
@@ -73,7 +80,7 @@ func Run() error {
 		flag.Usage()
 		return nil
 	default:
-		return fmt.Errorf("unknown command: %s (available commands: start, stop, status, check)", command)
+		return fmt.Errorf("unknown command: %s (available commands: start, stop, status, list, check)", command)
 	}
 
 	return nil
@@ -104,7 +111,7 @@ func parseArgs() (*service.Service, string, error) {
 }
 
 func getServiceForCommand(cmd, name string, args []string, envs []string) (*service.Service, error) {
-	if cmd == "check" || cmd == "help" {
+	if cmd == "check" || cmd == "help" || cmd == "list" {
 		return nil, nil
 	}
 

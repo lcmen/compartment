@@ -15,20 +15,21 @@ compartment [flags] start <service> [version]
 Example:
 
 ```
-compartment start postgresql 17
+compartment start postgres 17
 compartment start redis 8
 ```
 
-By default, the container is named after the service and its version (e.g., `postgresql17` or `redis8`). You can specify a custom name using the `-n` option (before the command):
+By default, the container is named `<version>.<service>` (e.g., `17.postgres` or `8.redis`). You can specify a custom prefix using the `-n` option — the service name is always appended automatically:
 
 ```
-compartment -n myapp.cache start redis 8
+compartment -n myapp start redis 8
+# → container name: myapp.redis
 ```
 
-To provide environment variables, use the `-e` flag (before the command):
+To provide environment variables, use the `-e` flag:
 
 ```
-compartment -n postgres17 -e POSTGRES_PASSWORD=postgres start postgresql 17
+compartment -e POSTGRES_PASSWORD=secret start postgres 17
 ```
 
 ### Stopping an Existing Service
@@ -36,13 +37,13 @@ compartment -n postgres17 -e POSTGRES_PASSWORD=postgres start postgresql 17
 To stop a service, use the `stop` command:
 
 ```
-compartment stop postgresql 17
+compartment stop postgres 17
 ```
 
-If you provided a custom name for the container, specify it with the `-n` option (before the command):
+If you used a custom name prefix, specify it with `-n`:
 
 ```
-compartment -n myapp.cache stop redis 8
+compartment -n myapp stop redis 8
 ```
 
 ### Getting the Status of a Service
@@ -50,7 +51,24 @@ compartment -n myapp.cache stop redis 8
 To get information about a service, use the `status` command:
 
 ```
-compartment status postgresql 17
+compartment status postgres 17
+```
+
+### Listing All Managed Containers
+
+To see all compartment-managed containers across all projects:
+
+```
+compartment list
+```
+
+Example output:
+
+```
+NAME                 SERVICE      VERSION    STATE
+17.postgres          postgres     17         running
+8.redis              redis        8          stopped
+devdns               devdns       latest     running
 ```
 
 ## Accessing a Service
@@ -114,8 +132,8 @@ dns-nameservers 127.0.0.1
 If you have configured everything correctly, you should be able to start the service and access it. For example:
 
 ```
-compartment start postgresql
-psql -U postgres -h postgres.container
+compartment start postgres
+psql -U postgres -h 18.postgres.container
 ```
 
 ### Verifying DNS Resolution
@@ -124,10 +142,10 @@ To test that DNS is working correctly:
 
 ```bash
 # This should return your container's IP address
-host postgres.container
+host 18.postgres.container
 
 # Test with dig as well
-dig postgres.container
+dig 18.postgres.container
 ```
 
 ## Checking Configuration

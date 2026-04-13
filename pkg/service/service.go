@@ -12,6 +12,7 @@ import (
 type Service struct {
 	Name    string
 	Image   string
+	Kind    string
 	Version string
 	Env     []string
 	Volumes []mount.Mount
@@ -72,7 +73,12 @@ func (s *Service) Start() error {
 		cnt.Remove()
 	}
 
-	cnt.Create(s.Image, s.Env, s.Volumes, s.Ports)
+	labels := map[string]string{
+		"compartment":         "true",
+		"compartment.service": s.Kind,
+		"compartment.version": s.Version,
+	}
+	cnt.Create(s.Image, s.Env, s.Volumes, s.Ports, labels)
 	cnt.Start()
 
 	printServiceInfo(cnt, s)

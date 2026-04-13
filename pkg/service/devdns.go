@@ -18,6 +18,7 @@ func NewDevDNSService(env []string) (*Service, error) {
 	return &Service{
 		Name:    "devdns",
 		Image:   "lmendelowski/devdns:latest",
+		Kind:    "devdns",
 		Version: "latest",
 		Env:     env,
 		Volumes: volumes,
