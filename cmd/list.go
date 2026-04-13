@@ -3,6 +3,7 @@ package cmd
 import (
 	"compartment/pkg/container"
 	"fmt"
+	"strings"
 )
 
 func listCmd() error {
@@ -16,22 +17,13 @@ func listCmd() error {
 		return nil
 	}
 
-	fmt.Printf("%-20s %-12s %-10s %s\n", "NAME", "SERVICE", "VERSION", "STATE")
+	fmt.Printf("%-16s %-24s %-12s %s\n", "NAME", "CONTAINER", "SERVICE", "VERSION")
 	for _, c := range containers {
 		service := c.Labels["compartment.service"]
 		version := c.Labels["compartment.version"]
+		name := strings.TrimSuffix(c.Name, "."+service)
 
-		var state string
-		switch c.State {
-		case container.StateRunning:
-			state = "running"
-		case container.StateStopped:
-			state = "stopped"
-		default:
-			state = "removed"
-		}
-
-		fmt.Printf("%-20s %-12s %-10s %s\n", c.Name, service, version, state)
+		fmt.Printf("%-16s %-24s %-12s %s\n", name, c.Name, service, version)
 	}
 
 	return nil
