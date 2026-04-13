@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"compartment/pkg/check"
+	"compartment/pkg/container"
 	"compartment/pkg/service"
 	"flag"
 	"fmt"
@@ -66,7 +67,7 @@ func Run() error {
 			return fmt.Errorf("error getting container status: %w", err)
 		}
 	case "list":
-		err := listCmd()
+		err := container.List()
 		if err != nil {
 			return fmt.Errorf("error listing containers: %w", err)
 		}
